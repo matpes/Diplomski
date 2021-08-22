@@ -1124,11 +1124,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\API.csproj",
+      "projectUniqueName": "E:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "e:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\API.csproj",
+      "projectPath": "E:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\API.csproj",
       "packagesPath": "C:\\Users\\pesic\\.nuget\\packages\\",
-      "outputPath": "e:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\obj\\",
+      "outputPath": "E:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\pesic\\AppData\\Roaming\\NuGet\\NuGet.Config"
