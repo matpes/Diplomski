@@ -456,3 +456,6 @@ $RECYCLE.BIN/
 ssl
 
 appsettings.json
+
+API/bin
+API/obj
