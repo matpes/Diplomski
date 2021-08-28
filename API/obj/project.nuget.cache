@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "YdP3aD4VknYWcnyqsZR+4EFUXCAGSlHxnzSIj7bjHjM32FwHtEF7upRZLAkpDyp3eJ4N085drSQsUGfIiefPgQ==",
+  "dgSpecHash": "VyRmFwYOlcwI5IyHUfK3BFWzqsBaZr2txTplM6uCUUI3EzT/exaG5OR7Ng6H0C9QIGc0/OFstmAhQrdyp7o0HQ==",
   "success": true,
   "projectFilePath": "E:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\API.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\pesic\\.nuget\\packages\\htmlagilitypack\\1.11.36\\htmlagilitypack.1.11.36.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.9\\microsoft.aspnetcore.authentication.jwtbearer.5.0.9.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

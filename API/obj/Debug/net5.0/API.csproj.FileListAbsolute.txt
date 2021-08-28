@@ -62,3 +62,4 @@ E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\System.IdentityModel
 E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\Microsoft.IdentityModel.Protocols.dll
 E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\HtmlAgilityPack.dll
