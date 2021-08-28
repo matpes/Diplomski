@@ -1,33 +1,38 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Shopping center</a>
-      <div class="float-left">
-          <ul class="navbar-nav ">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Cart</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Regsiter</a>
-          </li>
-        </ul>
-      </div>
-        <form #loginForm="ngForm" class="d-flex float-right" (ngSubmit)="login()" autocomplete="off">
-          <input 
-          name="username"
-          [(ngModel)]="model.username"
-          class="form-control me-2" 
-          type="text" 
-          placeholder="Username">
-          <input 
-          name="password"
-          [(ngModel)]="model.password"
-          class="form-control me-2" 
-          type="password" 
-          placeholder="Password">
-          <button class="btn btn-outline-info" type="submit">Login</button>
+        <a class="navbar-brand" href="#">Shopping center</a>
+        <div class="float-left">
+            <ul class="navbar-nav ">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" *ngIf="(accountService.currentUser$ | async)==undefined">Regsiter</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="logout()" href="#" *ngIf="accountService.currentUser$ | async">Log
+                        Out</a>
+                </li>
+            </ul>
+        </div>
+        <div class="dropdown" *ngIf="accountService.currentUser$ | async" dropdown>
+            <a class="dropdown-toggle text-light" dropdownToggle>Welcome user</a>
+            <div class="dropdown-menu mt-3" *dropdownMenu>
+                <a class="dropdown-item">Edit profile</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" (click)="logout()">Log out</a>
+            </div>
+        </div>
+        <form *ngIf="(accountService.currentUser$ | async) == undefined" #loginForm="ngForm" class="d-flex float-right"
+            (ngSubmit)="login()" autocomplete="off">
+            <input name="username" [(ngModel)]="model.username" class="form-control me-2" type="text"
+                placeholder="Username">
+            <input name="password" [(ngModel)]="model.password" class="form-control me-2" type="password"
+                placeholder="Password">
+            <button class="btn btn-outline-info" type="submit">Login</button>
         </form>
     </div>
-  </nav>
+</nav>
