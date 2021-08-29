@@ -12,6 +12,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
+    <PackageReference Include="PuppeteerSharp" Version="5.0.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
+    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="92.0.4515.10700" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
   </ItemGroup>
