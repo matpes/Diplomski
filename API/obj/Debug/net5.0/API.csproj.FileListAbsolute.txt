@@ -68,3 +68,5 @@ E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\Newtonsoft.Json.dll
 E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\PuppeteerSharp.dll
 E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\ICSharpCode.SharpZipLib.dll
 E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\WebDriver.dll
+E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\AutoMapper.dll
+E:\8_semestar\Diplomski\ShoppingCenter\API\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

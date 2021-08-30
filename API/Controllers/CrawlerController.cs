@@ -15,18 +15,16 @@ namespace API.Controllers
     using System;
 
     using PuppeteerSharp;
-
-    using OpenQA.Selenium;
-    using OpenQA.Selenium.Chrome;
+    using API.Entitites;
+    using API.Interfaces;
 
     public class CrawlerController : BaseApiController
     {
-        private readonly DataContext _context;
+        private readonly IArticlesRepository _articlesRepository;
 
-
-        public CrawlerController(DataContext context)
+        public CrawlerController(IArticlesRepository articlesRepository)
         {
-            _context = context;
+            _articlesRepository = articlesRepository;
         }
 
 
@@ -170,24 +168,32 @@ namespace API.Controllers
                     {
                         ArticleDto newArticle = new ArticleDto { };
                         newArticle.href = pic.Attributes[1].Value;
-                        newArticle = await this.zaraGetArticleInfo(newArticle);
+                        newArticle = await zaraGetArticleInfo(newArticle);
                         newArticle.type = type;
                         newArticle.gender = gender;
                         articles.Add(newArticle);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         ++faileds;
                     }
                 }
-                Console.WriteLine("ZAVRSENO " + str);
             }
+
+            _articlesRepository.insertArrticles(articles);
 
 
             Console.WriteLine("ZAVRSENO SVE uz " + faileds + " propalih artikala");
             return Ok("articles.ToArray()");
 
         }
+
+        // private async void insertArticleIntoDatabase(ArticleDto newArticle)
+        // {
+
+        //     await _context.Articles.AddAsync(_mapper.Map<Article>(newArticle));
+        //     await _context.SaveChangesAsync();
+        // }
 
         [HttpPost("PullAndBear")]
         public ActionResult crawlPullAndBear(ArticleDto articleDto)
@@ -237,42 +243,8 @@ namespace API.Controllers
 
 
         [HttpPost("helper")]
-        public async Task<ActionResult> helper(ArticleDto details)
+        public void helper(ArticleDto details)
         {
-
-            var fullUrl = details.href;
-            var response = await CallUrl(fullUrl);
-
-            return Ok(response);
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(response);
-            // var price = htmlDoc.DocumentNode.SelectSingleNode("//span[@class='price__amount-current'").InnerHtml;
-            var price = htmlDoc.DocumentNode.Descendants("span").Where(node => node.GetAttributeValue("class", "").Equals("price__amount-current")).First().InnerHtml;
-            var title = htmlDoc.DocumentNode.Descendants("h1").Where(node => node.GetAttributeValue("class", "").Equals("product-detail-card-info__name")).First().InnerHtml;
-            details.price = price;
-            details.name = title;
-            //var images = htmlDoc.DocumentNode.Descendants("picture").Where(node => node.GetAttributeValue("class", "").Equals("media-image")).First();
-            int i = 0;
-            string parse = response;
-            List<string> slike = new List<string>();
-            while ((i = parse.IndexOf("<picture")) >= 0)
-            {
-                i += 8;
-                parse = parse.Substring(i);
-                i = parse.IndexOf("srcSet=") + 8;
-                string temp = "";
-                while (!(parse[i].Equals(' ')))
-                {
-                    temp += parse[i];
-                    i++;
-                }
-                Console.WriteLine(temp);
-                slike.Add(temp);
-                //details.imgSrc.
-            }
-            details.imgSrc = slike.ToArray();
-
-            return Ok(details);
         }
 
         private string zaraDetermineCategory(string url)
@@ -310,7 +282,7 @@ namespace API.Controllers
 
             int i = 0;
             string parse = response;
-            List<string> slike = new List<string>();
+            ICollection<ArticleImagesDto> slike = new List<ArticleImagesDto>();
             while ((i = parse.IndexOf("<picture")) >= 0)
             {
                 i += 8;
@@ -322,10 +294,14 @@ namespace API.Controllers
                     temp += parse[i];
                     i++;
                 }
-                //Console.WriteLine(temp);
-                slike.Add(temp);
+                if (!temp.Contains("https://static.zara.net/photos///contents/cm/sustainability/extrainfo/w/563/sustainability-extrainfo-label-1056_0.jpg?ts=1626188305776"))
+                {
+                    ArticleImagesDto image = new ArticleImagesDto();
+                    image.src = temp;
+                    slike.Add(image);
+                }
             }
-            details.imgSrc = slike.ToArray();
+            details.imgSources = slike;
 
             return details;
         }
@@ -337,8 +313,8 @@ namespace API.Controllers
             HttpClient client = new HttpClient();
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
             client.DefaultRequestHeaders.Accept.Clear();
-            var response = client.GetStringAsync(fullUrl);
-            return await response;
+            var response = await client.GetStringAsync(fullUrl);
+            return response;
         }
 
     }

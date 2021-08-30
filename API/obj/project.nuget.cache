@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "rY0kCwsZk1gfuSFHWyEevuXblsqFrVexkn06Q41yF3lOXFAeTwBZHmEVVGtVLHnTCShWHt0HmyewFS+Pd7qXkA==",
+  "dgSpecHash": "U7Mx31SMEpme3t2bKMLmIFuOWKpNWjEJuv9Z8btG3Y4K6quCyG1Be8BpdM/0Z/Rhc4N8Hkd7k6so5xRkDaWntg==",
   "success": true,
   "projectFilePath": "E:\\8_semestar\\Diplomski\\ShoppingCenter\\API\\API.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\pesic\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
+    "C:\\Users\\pesic\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.1.1\\automapper.extensions.microsoft.dependencyinjection.8.1.1.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\htmlagilitypack\\1.11.36\\htmlagilitypack.1.11.36.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.9\\microsoft.aspnetcore.authentication.jwtbearer.5.0.9.nupkg.sha512",
@@ -103,7 +105,7 @@
     "C:\\Users\\pesic\\.nuget\\packages\\system.net.sockets\\4.3.0\\system.net.sockets.4.3.0.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\system.objectmodel\\4.3.0\\system.objectmodel.4.3.0.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\system.reflection\\4.3.0\\system.reflection.4.3.0.nupkg.sha512",
-    "C:\\Users\\pesic\\.nuget\\packages\\system.reflection.emit\\4.3.0\\system.reflection.emit.4.3.0.nupkg.sha512",
+    "C:\\Users\\pesic\\.nuget\\packages\\system.reflection.emit\\4.7.0\\system.reflection.emit.4.7.0.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\system.reflection.emit.ilgeneration\\4.3.0\\system.reflection.emit.ilgeneration.4.3.0.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\system.reflection.emit.lightweight\\4.3.0\\system.reflection.emit.lightweight.4.3.0.nupkg.sha512",
     "C:\\Users\\pesic\\.nuget\\packages\\system.reflection.extensions\\4.3.0\\system.reflection.extensions.4.3.0.nupkg.sha512",
