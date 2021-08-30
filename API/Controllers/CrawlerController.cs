@@ -22,10 +22,14 @@ namespace API.Controllers
     public class CrawlerController : BaseApiController
     {
         private readonly DataContext _context;
+
+
         public CrawlerController(DataContext context)
         {
             _context = context;
         }
+
+
 
         [HttpPost("bershka")]
         public ActionResult crawlBershka(LoginDto loginDto)
@@ -82,7 +86,7 @@ namespace API.Controllers
                 htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(response);
 
-                var linkovi = htmlDoc.DocumentNode.Descendants("a").ToList(); 
+                var linkovi = htmlDoc.DocumentNode.Descendants("a").ToList();
 
                 return Ok(response);
 
@@ -107,7 +111,7 @@ namespace API.Controllers
         }
 
         [HttpPost("zara")]
-        public ActionResult crawlZara(LoginDto loginDto)
+        public async Task<ActionResult> crawlZara(LoginDto loginDto)
         {
             var url = "https://www.zara.com/rs/";
             var response = CallUrl(url).Result;
@@ -128,7 +132,6 @@ namespace API.Controllers
                     }
                 }
             }
-            Console.WriteLine("ZAVRSEN WOMAN");
             narrowedLinks.RemoveAt(narrowedLinks.Count - 1);
             foreach (var node in links.ElementAt<HtmlNode>(11).NextSibling.ChildNodes)
             {
@@ -140,113 +143,194 @@ namespace API.Controllers
                     }
                 }
             }
-
-            Console.WriteLine("ZAVRSEN MAN");
             narrowedLinks.RemoveAt(narrowedLinks.Count - 1);
 
-            // StringBuilder sb = new StringBuilder();
-            // foreach(var str in narrowedLinks){
-            //     sb.Append(str).Append("\n");
-            //     //Console.WriteLine(str);
-            // }
-
+            //DOHVATANJE ARTIKALA
+            List<ArticleDto> articles = new List<ArticleDto>();
+            var faileds = 0;
             foreach (var str in narrowedLinks)
             {
                 response = CallUrl(str).Result;
-
                 htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(response);
 
-                //var itemPrices = htmlDoc.DocumentNode.Descendants("span").Where(node => node.GetAttributeValue("class", "").Contains("price__amount-current")).ToList();
-                //var itemImages = htmlDoc.DocumentNode.Descendants("img").Where(node => node.GetAttributeValue("class", "").Contains("media-image__image")).ToList();
-                //var itemLink1 = htmlDoc.DocumentNode.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("product-link")).ToList();
-                //var itemLink2 = htmlDoc.DocumentNode.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("product-grid-product__link")).ToList();
-
-                var productsTypeOne = htmlDoc.DocumentNode.Descendants("li").Where(node => node.GetAttributeValue("class", "").Contains("product-grid-block")).ToList();
                 var picturesLinks = htmlDoc.DocumentNode.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("product-link product-grid-product__link link")).ToList();
-                var allPictures = htmlDoc.DocumentNode.Descendants("img");
-                var allPictures2 = htmlDoc.DocumentNode.SelectNodes(".//img");
-                //List<HtmlNode> chosenOnes = new List<HtmlNode>();
-                List<ArticleDto> articles = new List<ArticleDto>();
+
+                string type = zaraDetermineCategory(str);
+                char gender = 'M';
+                if (str.IndexOf("woman") >= 0)
+                {
+                    gender = 'F';
+                }
+
 
                 foreach (var pic in picturesLinks)
                 {
-                    ArticleDto newArticle = new ArticleDto { };
-                    var href = pic.Attributes[1].Value;
-                    newArticle.href = href;
-                    // var imageList = pic.Descendants("img").Where(node => node.GetAttributeValue("class", "").Contains("media-image__image")).ToList();
-                    var imageList = pic.Descendants("img").ToList();
-                    if (imageList.Count != 2)
+                    try
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        var image1 = imageList.ElementAt(0);
-                        var image2 = imageList.ElementAt(1);
-                        newArticle.name = image1.Attributes[1].Value;
-                        newArticle.imgSrc = image2.Attributes[0].Value;
+                        ArticleDto newArticle = new ArticleDto { };
+                        newArticle.href = pic.Attributes[1].Value;
+                        newArticle = await this.zaraGetArticleInfo(newArticle);
+                        newArticle.type = type;
+                        newArticle.gender = gender;
                         articles.Add(newArticle);
                     }
-                }
-
-                var descriptionLinks = htmlDoc.DocumentNode.Descendants("div").Where(node => node.GetAttributeValue("class", "").Contains("product-grid-product-info")).ToList();
-
-                foreach (var desc in descriptionLinks)
-                {
-                    var href = "";
-                    var aList = desc.Descendants("a").ToList();
-                    if (aList.Count == 0)
+                    catch (Exception e)
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        var a = aList.ElementAt(0);
-                        href = a.Attributes[1].Value;
-                        ArticleDto existingArticle = articles.Find(art => art.href.Equals(href));
-                        if (existingArticle != null)
-                        {
-                            var price = desc.Descendants("span").Where(node => node.GetAttributeValue("class", "").Equals("price__amount-current")).First<HtmlNode>();
-                            if (price != null)
-                            {
-                                existingArticle.price = price.InnerHtml;
-                            }
-                        }
+                        ++faileds;
                     }
                 }
-
-                // foreach (var product in productsTypeOne)
-                // {
-                //     var priceOfProduct = product.Descendants("span").Where(node => node.GetAttributeValue("class", "").Contains("price__amount-current")).ToList();
-                //     var imageOfProduct = product.Descendants("img").Where(node => node.GetAttributeValue("class", "").Contains("media-image__image")).ToList();
-                //     var linkOfProduct = product.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("product-link")).ToList();
-                //     if (imageOfProduct.Count > 0){
-                //         HtmlNode image = imageOfProduct.ElementAt(0);
-                //         articles.
-                //     }else if(linkOfProduct.Count > 0){
-
-                //     }
-                //     if (imageOfProduct.Count > 0)
-                //     {
-                //         ++i;
-                //         //chosenOnes.Add(product);
-                //         // Console.WriteLine(imageOfProduct.ElementAt<HtmlNode>(0).Attributes[1].Value);
-                //         // Console.WriteLine(imageOfProduct.ElementAt<HtmlNode>(0).Attributes[2].Value);
-                //     }else{
-                //         j++;
-                //     }
-                // }
-
-                return Ok("response");
+                Console.WriteLine("ZAVRSENO " + str);
             }
 
 
-
-            Console.WriteLine("ZAVRSENO SVE");
-            return Ok("RADI");
+            Console.WriteLine("ZAVRSENO SVE uz " + faileds + " propalih artikala");
+            return Ok("articles.ToArray()");
 
         }
+
+        [HttpPost("PullAndBear")]
+        public ActionResult crawlPullAndBear(ArticleDto articleDto)
+        {
+
+            var url = "https://www.pullandbear.com/rs/muskarci-n6228";
+            var url2 = "https://www.pullandbear.com/rs/zene-n6417";
+            var response = CallUrl(url).Result;
+            var response2 = CallUrl(url2).Result;
+
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(response);
+
+            var links = htmlDoc.DocumentNode.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("c-main-nav-link spa-ready")).ToList<HtmlNode>();
+
+
+            return Ok(response);
+        }
+
+        [HttpPost("zaraImage")]
+        public async Task<ActionResult> zaraGetPuppeter(ArticleDto articleDto)
+        {
+
+            //var fullUrl = "https://www.bershka.com/rs/%C5%BEene/ode%C4%87a/majice-i-topovi-c1010193217.html";
+            // var fullUrl = "https://www.zara.com/rs/sr/woman-blazers-l1055.html?v1=1882227";
+            var fullUrl = articleDto.href;
+            var response = await CallUrl(fullUrl);
+
+            var options = new LaunchOptions()
+            {
+                Headless = true,
+                ExecutablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                Product = Product.Chrome
+            };
+            var browser = await Puppeteer.LaunchAsync(options, null);
+            var page = await browser.NewPageAsync();
+            await page.GoToAsync(fullUrl, new NavigationOptions()
+            {
+                WaitUntil = new WaitUntilNavigation[] { WaitUntilNavigation.Load, WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Networkidle0, WaitUntilNavigation.Networkidle2 },
+                Timeout = 0
+            });
+            var links = @"Array.from(document.querySelectorAll('img')).map(img => img.src);";
+            var urls = await page.EvaluateExpressionAsync<string[]>(links);
+
+            return Ok("LOL");
+        }
+
+
+        [HttpPost("helper")]
+        public async Task<ActionResult> helper(ArticleDto details)
+        {
+
+            var fullUrl = details.href;
+            var response = await CallUrl(fullUrl);
+
+            return Ok(response);
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(response);
+            // var price = htmlDoc.DocumentNode.SelectSingleNode("//span[@class='price__amount-current'").InnerHtml;
+            var price = htmlDoc.DocumentNode.Descendants("span").Where(node => node.GetAttributeValue("class", "").Equals("price__amount-current")).First().InnerHtml;
+            var title = htmlDoc.DocumentNode.Descendants("h1").Where(node => node.GetAttributeValue("class", "").Equals("product-detail-card-info__name")).First().InnerHtml;
+            details.price = price;
+            details.name = title;
+            //var images = htmlDoc.DocumentNode.Descendants("picture").Where(node => node.GetAttributeValue("class", "").Equals("media-image")).First();
+            int i = 0;
+            string parse = response;
+            List<string> slike = new List<string>();
+            while ((i = parse.IndexOf("<picture")) >= 0)
+            {
+                i += 8;
+                parse = parse.Substring(i);
+                i = parse.IndexOf("srcSet=") + 8;
+                string temp = "";
+                while (!(parse[i].Equals(' ')))
+                {
+                    temp += parse[i];
+                    i++;
+                }
+                Console.WriteLine(temp);
+                slike.Add(temp);
+                //details.imgSrc.
+            }
+            details.imgSrc = slike.ToArray();
+
+            return Ok(details);
+        }
+
+        private string zaraDetermineCategory(string url)
+        {
+            int i = url.IndexOf("man-");
+            if (i == -1)
+            {
+                return "other";
+            }
+            i += 4;
+            string type = "";
+            while (!url[i].Equals('-'))
+            {
+                type += url[i];
+                i++;
+            }
+            Console.WriteLine(type);
+            return type;
+        }
+
+        private async Task<ArticleDto> zaraGetArticleInfo(ArticleDto details)
+        {
+
+            var fullUrl = details.href;
+            var response = await CallUrl(fullUrl);
+            //return Ok(response);
+
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(response);
+            var price = htmlDoc.DocumentNode.Descendants("span").Where(node => node.GetAttributeValue("class", "").Equals("price__amount-current")).First().InnerHtml;
+            var title = htmlDoc.DocumentNode.Descendants("h1").Where(node => node.GetAttributeValue("class", "").Equals("product-detail-card-info__name")).First().InnerHtml;
+
+            details.price = price;
+            details.name = title;
+
+            int i = 0;
+            string parse = response;
+            List<string> slike = new List<string>();
+            while ((i = parse.IndexOf("<picture")) >= 0)
+            {
+                i += 8;
+                parse = parse.Substring(i);
+                i = parse.IndexOf("srcSet=") + 8;
+                string temp = "";
+                while (!(parse[i].Equals(' ')))
+                {
+                    temp += parse[i];
+                    i++;
+                }
+                //Console.WriteLine(temp);
+                slike.Add(temp);
+            }
+            details.imgSrc = slike.ToArray();
+
+            return details;
+        }
+
+
 
         private static async Task<string> CallUrl(string fullUrl)
         {

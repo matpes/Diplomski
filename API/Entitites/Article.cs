@@ -1,7 +1,8 @@
-namespace API.DTOs
+namespace API.Entitites
 {
-    public class ArticleDto
+    public class Article
     {
+        public int Id { get; set; }
         public string href { get; set; }
         public string name { get; set; }
         public string[] imgSrc { get; set; }
