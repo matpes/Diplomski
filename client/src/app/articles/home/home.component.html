@@ -1,0 +1,57 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2">
+            <div class="dont-move">
+
+                <h3>
+                    Filteri:
+                </h3>
+                <table class="table table-borderless">
+                    <tr>
+                        <th>
+                            Pol:
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="radio" name="gender" id="female" (click)="selectGender('F')">
+                            &nbsp;&nbsp;&nbsp;
+                            <label for="female">Zensko</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="radio" name="gender" id="male" (click)="selectGender('M')">
+                            &nbsp;&nbsp;&nbsp;
+                            <label for="male">Musko</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="row">
+                <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3" *ngFor="let article of articles">
+                    <a href="/article/{{article.id}}">
+                        <div class="picture pictureLink">
+
+                            <div class="text-center" style="height: 70px;">
+                                <b>{{article.name}}</b>
+                            </div>
+                            <img src="{{article.imgSources[0].src}}" alt="" class="img-fluid">
+                            <div class="text-center">
+                                <b>
+                                    {{article.price}}
+                                </b>
+                            </div>
+                        </div>
+                    </a>
+                    <br>
+                    <br>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

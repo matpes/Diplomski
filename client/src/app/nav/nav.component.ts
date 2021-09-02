@@ -29,12 +29,4 @@ export class NavComponent implements OnInit {
     this.accountService.logout();
   }
 
-  // getCurrentUser(){
-  //   this.accountService.currentUser$.subscribe(user =>{
-  //     this.loggedIn = !!user;
-  //   }, error => {
-  //     console.log(error);
-  //   });
-  // }
-
 }

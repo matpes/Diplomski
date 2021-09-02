@@ -10,7 +10,7 @@ namespace API.Interfaces
         void insertArticle(ArticleDto article);
         void insertArrticles(ICollection<ArticleDto> articles);
         Task<IEnumerable<ArticleDto>> getArticlesAsync();
-        Task<ArticleDto> getArticleAsync();
+        Task<ArticleDto> getArticleByIdAsync(int id);
         Task<IEnumerable<ArticleImagesDto>> getPicturesForArticle(ArticleDto article);
 
     }

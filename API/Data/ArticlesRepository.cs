@@ -19,9 +19,10 @@ namespace API.Data
             _context = context;
         }
 
-        public Task<ArticleDto> getArticleAsync()
+        public async Task<ArticleDto> getArticleByIdAsync(int id)
         {
-            throw new System.NotImplementedException();
+            var article = await _context.Articles.Include(p => p.imgSources).SingleAsync(x => x.Id == id);
+            return _mapper.Map<ArticleDto>(article);
         }
 
         public async Task<IEnumerable<ArticleDto>> getArticlesAsync()

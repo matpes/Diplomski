@@ -8,12 +8,17 @@ import { NavComponent } from './nav/nav.component';
 import { FormsModule } from '@angular/forms';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { RegisterComponent } from './register/register.component';
+import { HomeComponent } from './articles/home/home.component';
+import { SingleArticleComponent } from './articles/home/single-article/single-article.component';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavComponent,
-    RegisterComponent
+    RegisterComponent,
+    HomeComponent,
+    SingleArticleComponent
   ],
   imports: [
     BrowserModule,
@@ -21,7 +26,8 @@ import { RegisterComponent } from './register/register.component';
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
-    BsDropdownModule.forRoot()
+    BsDropdownModule.forRoot(),
+    CarouselModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

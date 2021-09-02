@@ -10,7 +10,7 @@
                     <a class="nav-link" href="#">Cart</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" *ngIf="(accountService.currentUser$ | async)==undefined">Regsiter</a>
+                    <a class="nav-link" href="/register" *ngIf="(accountService.currentUser$ | async)==undefined">Regsiter</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" (click)="logout()" href="#" *ngIf="accountService.currentUser$ | async">Log

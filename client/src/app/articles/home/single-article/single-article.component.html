@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="row">
+        <div class="offset-1 col-10 text-center">
+            <p style="font-size: 20pt; font-weight: 700;">
+                {{article.name}}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <carousel>
+                <slide *ngFor="let pic of article.imgSources">
+                    <img src="{{pic.src}}" alt="{{pic.src}}" style="display: block; width: 100%;">
+                </slide>
+            </carousel>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Cena:</th>
+                    <td>{{article.price}}</td>
+                </tr>
+                <tr>
+                    <th>Kategorija:</th>
+                    <td>
+                        {{article.type}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Pol:</th>
+                    <td>{{article.gender}}</td>
+                </tr>
+                <tr>
+                    <th>Detalji:</th>
+                    <td>
+                        <a href="{{article.href}}">
+                            Link ka proizvodu na originalnoj web stranici
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button type="button" class="btn btn-info form-control">Kupi</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</div>

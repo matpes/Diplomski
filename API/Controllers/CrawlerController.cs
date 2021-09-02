@@ -145,8 +145,9 @@ namespace API.Controllers
 
             //DOHVATANJE ARTIKALA
             List<ArticleDto> articles = new List<ArticleDto>();
+            
             var faileds = 0;
-            foreach (var str in narrowedLinks)
+            foreach (var str in narrowedLinks.Distinct())
             {
                 response = CallUrl(str).Result;
                 htmlDoc = new HtmlDocument();
@@ -171,7 +172,9 @@ namespace API.Controllers
                         newArticle = await zaraGetArticleInfo(newArticle);
                         newArticle.type = type;
                         newArticle.gender = gender;
-                        articles.Add(newArticle);
+                        if(articles.FindIndex(x => x.href.Equals(newArticle.href)) == -1){
+                            articles.Add(newArticle);
+                        }
                     }
                     catch (Exception)
                     {
@@ -294,7 +297,7 @@ namespace API.Controllers
                     temp += parse[i];
                     i++;
                 }
-                if (!temp.Contains("https://static.zara.net/photos///contents/cm/sustainability/extrainfo/w/563/sustainability-extrainfo-label-1056_0.jpg?ts=1626188305776"))
+                if (!temp.Contains("https://static.zara.net/photos///contents/cm/sustainability/extrainfo/w/563/"))
                 {
                     ArticleImagesDto image = new ArticleImagesDto();
                     image.src = temp;

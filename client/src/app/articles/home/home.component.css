@@ -1,0 +1,21 @@
+ .picture {
+    border: 10px double darkgray;
+    border-radius: 5%;
+    padding: 3px;
+ }
+
+ a .pictureLink{
+    color: black;
+    text-decoration: none;
+ }
+
+ a:hover .pictureLink{
+    color: black;
+    text-decoration: none !important;
+    
+ }
+
+ .dont-move{
+   position: fixed !important; 
+   top: 110px !important;
+ }
