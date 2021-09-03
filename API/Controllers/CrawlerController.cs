@@ -22,6 +22,20 @@ namespace API.Controllers
     {
         private readonly IArticlesRepository _articlesRepository;
 
+        private static readonly LaunchOptions puppeteerLaunchoptions = new LaunchOptions()
+        {
+            Headless = true,
+            ExecutablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            Product = Product.Chrome
+        };
+
+
+        private static readonly NavigationOptions puppeteerNavigationOptions = new NavigationOptions()
+        {
+            WaitUntil = new WaitUntilNavigation[] { WaitUntilNavigation.Load, WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Networkidle0, WaitUntilNavigation.Networkidle2 },
+            Timeout = 0
+        };
+
         public CrawlerController(IArticlesRepository articlesRepository)
         {
             _articlesRepository = articlesRepository;
@@ -29,6 +43,7 @@ namespace API.Controllers
 
 
 
+        //DOHVACENI SU LINKOVI KA POSEBNIM KATEGORIJAMA
         [HttpPost("bershka")]
         public ActionResult crawlBershka(LoginDto loginDto)
         {
@@ -93,7 +108,10 @@ namespace API.Controllers
             return null;
         }
 
-        [HttpPost("zaraDetalj")]
+
+        //OVDE JE NESTO RADJENO, ALI SE NE SECAM STA TACNO
+        //DOHVATANE SU SLIKE ZA PULL AND BEAR
+        [HttpPost("pullAndBearDetalj")]
         public ActionResult crawZaraDetails(LoginDto loginDto)
         {
 
@@ -108,8 +126,147 @@ namespace API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("zara")]
-        public async Task<ActionResult> crawlZara(LoginDto loginDto)
+
+        [HttpPost("PullAndBear")]
+        public async Task<ActionResult> crawlPullAndBear(LoginDto login)
+        {
+            /*
+            var url = login.Username;
+            var url2 = login.Password;
+
+            var links = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+
+            var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
+
+            //MEN
+            var page = await browser.NewPageAsync();
+            await page.GoToAsync(url, puppeteerNavigationOptions);
+            var urls = await page.EvaluateExpressionAsync<string[]>(links);
+            Console.WriteLine("WENT AND DONE MEN " + urls.Count());
+
+            //WOMEN
+            var page2 = await browser.NewPageAsync();
+            await page2.GoToAsync(url2, puppeteerNavigationOptions);
+            var urls2 = await page2.EvaluateExpressionAsync<string[]>(links);
+            Console.WriteLine("WENT AND DONE WOMEN " + urls2.Count());
+
+            List<string> men = getPullAndBearLinksLevel1("/muskarci/odeca/", urls);
+            List<string> women = getPullAndBearLinksLevel1("/zene/odeca/", urls2);
+
+            List<ArticleDto> newArticles = new List<ArticleDto>();
+
+            foreach (var man in men)
+            {
+                ArticleDto article = new ArticleDto { };
+                article.gender = 'M';
+                article.type = getPullAndBearCategory(man);
+
+            }
+
+            Console.WriteLine("Muskih linkova ima: " + men.Count + ", a zenskih ima: " + women.Count);
+            */
+            string[] PullAndBearLinks = {
+                "https://www.pullandbear.com/rs/muskarci/odeca/farmerke-n6347",
+                "https://www.pullandbear.com/rs/muskarci/odeca/pantalone-n6363",
+                "https://www.pullandbear.com/rs/muskarci/odeca/majice-n6323",
+                "https://www.pullandbear.com/rs/muskarci/odeca/polo-majice-n6371",
+                "https://www.pullandbear.com/rs/muskarci/odeca/dukserice-n6382",
+                "https://www.pullandbear.com/rs/muskarci/odeca/jakne-n6335",
+                "https://www.pullandbear.com/rs/muskarci/odeca/bermude-n6308",
+                "https://www.pullandbear.com/rs/muskarci/odeca/kosulje-n6313",
+                "https://www.pullandbear.com/rs/muskarci/odeca/kupace-gace-n6299",
+                "https://www.pullandbear.com/rs/muskarci/odeca/pletenina-n6372",
+                "https://www.pullandbear.com/rs/zene/odeca/intimates-n7128",
+                "https://www.pullandbear.com/rs/zene/odeca/farmerke-n6581",
+                "https://www.pullandbear.com/rs/zene/odeca/cool-jeans-n7044",
+                "https://www.pullandbear.com/rs/zene/odeca/pantalone-n6600",
+                "https://www.pullandbear.com/rs/zene/odeca/majice-n6541",
+                "https://www.pullandbear.com/rs/zene/odeca/topovi-n6644",
+                "https://www.pullandbear.com/rs/zene/odeca/dukserice-n6636",
+                "https://www.pullandbear.com/rs/zene/odeca/haljine-n6646",
+                "https://www.pullandbear.com/rs/zene/odeca/jakne-i-sakoi-n6555",
+                "https://www.pullandbear.com/rs/zene/odeca/bluze-i-kosulje-n6525",
+                "https://www.pullandbear.com/rs/zene/odeca/kratke-pantalone-n6629",
+                "https://www.pullandbear.com/rs/zene/odeca/suknje-n6571",
+                "https://www.pullandbear.com/rs/zene/odeca/kombinezoni-i-pantalone-na-tregere-n6599",
+                "https://www.pullandbear.com/rs/zene/odeca/pletenina-n6618",
+                "https://www.pullandbear.com/rs/zene/odeca/kupaci-kostimi-n6513",
+                "https://www.pullandbear.com/rs/zene/odeca/pakovanja-n6979"
+            };
+
+            foreach (var link in PullAndBearLinks)
+            {
+                ArticleDto article = new ArticleDto { };
+                //char gender = 'M';
+                //string type = getPullAndBearCategory(link);
+
+                var links = @"Array.from(document.querySelectorAll('img')).map(img => img.src);";
+
+                var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
+
+                //MEN
+                var page = await browser.NewPageAsync();
+                await page.GoToAsync(link, puppeteerNavigationOptions);
+                var pics = await page.EvaluateExpressionAsync<string[]>(links);
+
+                StringBuilder sb = new StringBuilder();
+                foreach(var l in pics){
+                    sb.Append(l).AppendLine();
+                }
+                return Ok(sb.ToString());
+                //Console.WriteLine("WENT AND DONE MEN " + urls.Count());
+
+            }
+
+            return Ok("LOL");
+
+        }
+
+        private string getPullAndBearCategory(string str)
+        {
+            int i = str.LastIndexOf('/') + 1;
+            int j = str.LastIndexOf("-n");
+            string ret;
+            ret = str.Substring(i, j - i);
+            return ret;
+        }
+
+        private List<string> getPullAndBearLinksLevel1(string param, string[] urls)
+        {
+            List<string> list = new List<string>();
+
+            foreach (var link in urls.Distinct())
+            {
+                if (!list.Contains(link) && link.Contains(param))
+                {
+                    int firstInex = link.IndexOf(param) + param.Length - 1;
+                    int lastIndex = link.LastIndexOf('/');
+                    int hasQuestionMark = link.IndexOf("?celement");
+                    if (firstInex == lastIndex && hasQuestionMark == -1)
+                    {
+                        list.Add(link);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+
+        /**
+        Metoda za krolovanje Zarinog sajta.
+        RADI.
+
+        TO DO: EVENTUALNO DODATI I DOHVATANJE BOJE ARTIKLA
+
+        TO DO: PROVERITI DA LI ARTIKALA VEC IMA U BAZI
+
+        PARAMS:
+        RETURNS: ActionResult
+
+        */
+        [HttpGet("zara")]
+        public async Task<ActionResult> crawlZara()
         {
             var url = "https://www.zara.com/rs/";
             var response = CallUrl(url).Result;
@@ -145,7 +302,7 @@ namespace API.Controllers
 
             //DOHVATANJE ARTIKALA
             List<ArticleDto> articles = new List<ArticleDto>();
-            
+
             var faileds = 0;
             foreach (var str in narrowedLinks.Distinct())
             {
@@ -172,7 +329,8 @@ namespace API.Controllers
                         newArticle = await zaraGetArticleInfo(newArticle);
                         newArticle.type = type;
                         newArticle.gender = gender;
-                        if(articles.FindIndex(x => x.href.Equals(newArticle.href)) == -1){
+                        if (articles.FindIndex(x => x.href.Equals(newArticle.href)) == -1)
+                        {
                             articles.Add(newArticle);
                         }
                     }
@@ -191,31 +349,7 @@ namespace API.Controllers
 
         }
 
-        // private async void insertArticleIntoDatabase(ArticleDto newArticle)
-        // {
-
-        //     await _context.Articles.AddAsync(_mapper.Map<Article>(newArticle));
-        //     await _context.SaveChangesAsync();
-        // }
-
-        [HttpPost("PullAndBear")]
-        public ActionResult crawlPullAndBear(ArticleDto articleDto)
-        {
-
-            var url = "https://www.pullandbear.com/rs/muskarci-n6228";
-            var url2 = "https://www.pullandbear.com/rs/zene-n6417";
-            var response = CallUrl(url).Result;
-            var response2 = CallUrl(url2).Result;
-
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(response);
-
-            var links = htmlDoc.DocumentNode.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("c-main-nav-link spa-ready")).ToList<HtmlNode>();
-
-
-            return Ok(response);
-        }
-
+        //OVO SE NE SECAM STA JE
         [HttpPost("zaraImage")]
         public async Task<ActionResult> zaraGetPuppeter(ArticleDto articleDto)
         {
@@ -245,9 +379,48 @@ namespace API.Controllers
         }
 
 
-        [HttpPost("helper")]
-        public void helper(ArticleDto details)
+        [HttpGet("helper")]
+        public ActionResult helper()
         {
+            string[] PullAndBearLinks = {
+                "https://www.pullandbear.com/rs/muskarci/odeca/farmerke-n6347",
+                "https://www.pullandbear.com/rs/muskarci/odeca/pantalone-n6363",
+                "https://www.pullandbear.com/rs/muskarci/odeca/majice-n6323",
+                "https://www.pullandbear.com/rs/muskarci/odeca/polo-majice-n6371",
+                "https://www.pullandbear.com/rs/muskarci/odeca/dukserice-n6382",
+                "https://www.pullandbear.com/rs/muskarci/odeca/jakne-n6335",
+                "https://www.pullandbear.com/rs/muskarci/odeca/bermude-n6308",
+                "https://www.pullandbear.com/rs/muskarci/odeca/kosulje-n6313",
+                "https://www.pullandbear.com/rs/muskarci/odeca/kupace-gace-n6299",
+                "https://www.pullandbear.com/rs/muskarci/odeca/pletenina-n6372",
+"https://www.pullandbear.com/rs/zene/odeca/intimates-n7128",
+"https://www.pullandbear.com/rs/zene/odeca/farmerke-n6581",
+"https://www.pullandbear.com/rs/zene/odeca/cool-jeans-n7044",
+"https://www.pullandbear.com/rs/zene/odeca/pantalone-n6600",
+"https://www.pullandbear.com/rs/zene/odeca/majice-n6541",
+"https://www.pullandbear.com/rs/zene/odeca/topovi-n6644",
+"https://www.pullandbear.com/rs/zene/odeca/dukserice-n6636",
+"https://www.pullandbear.com/rs/zene/odeca/haljine-n6646",
+"https://www.pullandbear.com/rs/zene/odeca/jakne-i-sakoi-n6555",
+"https://www.pullandbear.com/rs/zene/odeca/bluze-i-kosulje-n6525",
+"https://www.pullandbear.com/rs/zene/odeca/kratke-pantalone-n6629",
+"https://www.pullandbear.com/rs/zene/odeca/suknje-n6571",
+"https://www.pullandbear.com/rs/zene/odeca/kombinezoni-i-pantalone-na-tregere-n6599",
+"https://www.pullandbear.com/rs/zene/odeca/pletenina-n6618",
+"https://www.pullandbear.com/rs/zene/odeca/kupaci-kostimi-n6513",
+"https://www.pullandbear.com/rs/zene/odeca/pakovanja-n6979"
+            };
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var man in PullAndBearLinks)
+            {
+
+                sb.Append(getPullAndBearCategory(man)).Append("\n");
+
+            }
+
+            return Ok(sb.ToString());
+
         }
 
         private string zaraDetermineCategory(string url)
