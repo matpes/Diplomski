@@ -18,6 +18,9 @@ namespace API.Controllers
     using API.Entitites;
     using API.Interfaces;
 
+    using OpenQA.Selenium;
+    using OpenQA.Selenium.Chrome;
+
     public class CrawlerController : BaseApiController
     {
         private readonly IArticlesRepository _articlesRepository;
@@ -33,6 +36,12 @@ namespace API.Controllers
         private static readonly NavigationOptions puppeteerNavigationOptions = new NavigationOptions()
         {
             WaitUntil = new WaitUntilNavigation[] { WaitUntilNavigation.Load, WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Networkidle0, WaitUntilNavigation.Networkidle2 },
+            Timeout = 0
+        };
+
+        private static readonly NavigationOptions fasterPuppeteerNavigationOptions = new NavigationOptions()
+        {
+            WaitUntil = new WaitUntilNavigation[] { WaitUntilNavigation.Load, WaitUntilNavigation.Networkidle0, WaitUntilNavigation.Networkidle2 },
             Timeout = 0
         };
 
@@ -109,30 +118,13 @@ namespace API.Controllers
         }
 
 
-        //OVDE JE NESTO RADJENO, ALI SE NE SECAM STA TACNO
-        //DOHVATANE SU SLIKE ZA PULL AND BEAR
-        [HttpPost("pullAndBearDetalj")]
-        public ActionResult crawZaraDetails(LoginDto loginDto)
+
+        [HttpGet("PullAndBear")]
+        public async Task<ActionResult> crawlPullAndBear()
         {
 
-            var url = "https://www.pullandbear.com/rs/muskarci/odeca/farmerke-n6347";
-            var response = CallUrl(url).Result;
-
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(response);
-
-            var allPictures = htmlDoc.DocumentNode.Descendants("img");
-            var allPictures2 = htmlDoc.DocumentNode.SelectNodes(".//img");
-            return Ok(response);
-        }
-
-
-        [HttpPost("PullAndBear")]
-        public async Task<ActionResult> crawlPullAndBear(LoginDto login)
-        {
-            /*
-            var url = login.Username;
-            var url2 = login.Password;
+            var url = "https://www.pullandbear.com/rs/muskarci-n6228";
+            var url2 = "https://www.pullandbear.com/rs/zene-n6417";
 
             var links = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
 
@@ -142,83 +134,22 @@ namespace API.Controllers
             var page = await browser.NewPageAsync();
             await page.GoToAsync(url, puppeteerNavigationOptions);
             var urls = await page.EvaluateExpressionAsync<string[]>(links);
-            Console.WriteLine("WENT AND DONE MEN " + urls.Count());
 
             //WOMEN
             var page2 = await browser.NewPageAsync();
             await page2.GoToAsync(url2, puppeteerNavigationOptions);
             var urls2 = await page2.EvaluateExpressionAsync<string[]>(links);
-            Console.WriteLine("WENT AND DONE WOMEN " + urls2.Count());
 
             List<string> men = getPullAndBearLinksLevel1("/muskarci/odeca/", urls);
             List<string> women = getPullAndBearLinksLevel1("/zene/odeca/", urls2);
 
-            List<ArticleDto> newArticles = new List<ArticleDto>();
+            List<ArticleDto> articlesList = new List<ArticleDto>();
+            articlesList = await getPullAndBearArticles('M', men, articlesList);
+            articlesList = await getPullAndBearArticles('F', women, articlesList);
 
-            foreach (var man in men)
-            {
-                ArticleDto article = new ArticleDto { };
-                article.gender = 'M';
-                article.type = getPullAndBearCategory(man);
+            _articlesRepository.insertArrticles(articlesList);
 
-            }
-
-            Console.WriteLine("Muskih linkova ima: " + men.Count + ", a zenskih ima: " + women.Count);
-            */
-            string[] PullAndBearLinks = {
-                "https://www.pullandbear.com/rs/muskarci/odeca/farmerke-n6347",
-                "https://www.pullandbear.com/rs/muskarci/odeca/pantalone-n6363",
-                "https://www.pullandbear.com/rs/muskarci/odeca/majice-n6323",
-                "https://www.pullandbear.com/rs/muskarci/odeca/polo-majice-n6371",
-                "https://www.pullandbear.com/rs/muskarci/odeca/dukserice-n6382",
-                "https://www.pullandbear.com/rs/muskarci/odeca/jakne-n6335",
-                "https://www.pullandbear.com/rs/muskarci/odeca/bermude-n6308",
-                "https://www.pullandbear.com/rs/muskarci/odeca/kosulje-n6313",
-                "https://www.pullandbear.com/rs/muskarci/odeca/kupace-gace-n6299",
-                "https://www.pullandbear.com/rs/muskarci/odeca/pletenina-n6372",
-                "https://www.pullandbear.com/rs/zene/odeca/intimates-n7128",
-                "https://www.pullandbear.com/rs/zene/odeca/farmerke-n6581",
-                "https://www.pullandbear.com/rs/zene/odeca/cool-jeans-n7044",
-                "https://www.pullandbear.com/rs/zene/odeca/pantalone-n6600",
-                "https://www.pullandbear.com/rs/zene/odeca/majice-n6541",
-                "https://www.pullandbear.com/rs/zene/odeca/topovi-n6644",
-                "https://www.pullandbear.com/rs/zene/odeca/dukserice-n6636",
-                "https://www.pullandbear.com/rs/zene/odeca/haljine-n6646",
-                "https://www.pullandbear.com/rs/zene/odeca/jakne-i-sakoi-n6555",
-                "https://www.pullandbear.com/rs/zene/odeca/bluze-i-kosulje-n6525",
-                "https://www.pullandbear.com/rs/zene/odeca/kratke-pantalone-n6629",
-                "https://www.pullandbear.com/rs/zene/odeca/suknje-n6571",
-                "https://www.pullandbear.com/rs/zene/odeca/kombinezoni-i-pantalone-na-tregere-n6599",
-                "https://www.pullandbear.com/rs/zene/odeca/pletenina-n6618",
-                "https://www.pullandbear.com/rs/zene/odeca/kupaci-kostimi-n6513",
-                "https://www.pullandbear.com/rs/zene/odeca/pakovanja-n6979"
-            };
-
-            foreach (var link in PullAndBearLinks)
-            {
-                ArticleDto article = new ArticleDto { };
-                //char gender = 'M';
-                //string type = getPullAndBearCategory(link);
-
-                var links = @"Array.from(document.querySelectorAll('img')).map(img => img.src);";
-
-                var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
-
-                //MEN
-                var page = await browser.NewPageAsync();
-                await page.GoToAsync(link, puppeteerNavigationOptions);
-                var pics = await page.EvaluateExpressionAsync<string[]>(links);
-
-                StringBuilder sb = new StringBuilder();
-                foreach(var l in pics){
-                    sb.Append(l).AppendLine();
-                }
-                return Ok(sb.ToString());
-                //Console.WriteLine("WENT AND DONE MEN " + urls.Count());
-
-            }
-
-            return Ok("LOL");
+            return Ok(articlesList);
 
         }
 
@@ -252,6 +183,168 @@ namespace API.Controllers
             return list;
         }
 
+        private async Task<List<ArticleDto>> getPullAndBearArticles(char gender, List<string> women, List<ArticleDto> articlesList)
+        {
+            foreach (var link in women)
+            {
+                string type = getPullAndBearCategory(link);
+
+                var response = await CallUrl(link);
+
+                HtmlDocument htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(response);
+
+                var linksA = htmlDoc.DocumentNode.Descendants("a").ToList();
+
+                foreach (var a in linksA)
+                {
+                    if (!a.FirstChild.Name.Equals("img"))
+                    {
+                        break;
+                    }
+                    ArticleDto article = new ArticleDto { };
+                    article.gender = gender;
+                    article.type = type;
+                    article.href = a.Attributes[0].Value;
+                    article.name = a.ChildNodes[1].InnerHtml;
+                    article.price = a.ChildNodes[2].InnerHtml + " RSD";
+                    var image = a.FirstChild.Attributes[0].Value;
+
+                    if (articlesList.FindIndex(x => x.href.Equals(article.href)) == -1)
+                    {
+                        article = await getPullAndBearImagesForArticle(article, image);
+                        articlesList.Add(article);
+                    }
+                }
+                Console.WriteLine("Finished " + link);
+            }
+            return articlesList;
+        }
+
+        private async Task<ArticleDto> getPullAndBearImagesForArticle(ArticleDto article, string linkic)
+        {
+            int j = 0;
+            string path = linkic.Substring(0, linkic.IndexOf('?'));
+            var indexFirst = path.IndexOf("_");
+            var indexLast = path.LastIndexOf("_");
+            string part1 = path.Substring(0, indexFirst + 1);
+            string part2 = path.Substring(indexLast);
+            List<ArticleImagesDto> list = new List<ArticleImagesDto>();
+            for (int i = 1; i < 9; i++)
+            {
+                string link = part1 + "2_" + i + part2;
+                ArticleImagesDto images = new ArticleImagesDto { };
+                images.src = link;
+                try{
+                    await CallUrl(link);
+                    list.Add(images);
+                }catch(Exception){
+                    
+                    if(++j==2){
+                        break;
+                    }
+                }
+
+            }
+            if (list.Count == 0)
+            {
+                ArticleImagesDto images = new ArticleImagesDto { };
+                images.src = linkic;
+                list.Add(images);
+            }
+
+            article.imgSources = list;
+            return article;
+        }
+
+        [HttpPost("testPictures")]
+        public async Task<ActionResult<ICollection<ArticleImagesDto>>> getPullAndBearImagesForArticle(LoginDto links)
+        {
+
+            /*var url = links.Username;
+            var imageStartingString = links.Password;
+            var endIndex = imageStartingString.IndexOf(".jpg") + 4;
+            imageStartingString = imageStartingString.Substring(0, endIndex);
+            var ids = @"Array.from(document.querySelectorAll('img')).map(img => img.id);";
+            var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
+            //MEN
+            var page = await browser.NewPageAsync();
+            await page.GoToAsync(url, fasterPuppeteerNavigationOptions);
+            var picturesIds = await page.EvaluateExpressionAsync<string[]>(ids);
+
+            var found = false;
+            var originId = "";
+            var indexStart = 0;
+            var indexEnd = 0;
+            foreach (var id in picturesIds)
+            {
+                if ((!("").Equals(id)) && imageStartingString.Contains(id))
+                {
+                    found = true;
+                    originId = id;
+                    indexStart = imageStartingString.IndexOf(id);
+                    indexEnd = indexStart + id.Length;
+                    break;
+                }
+            }
+            List<ArticleImagesDto> list = new List<ArticleImagesDto>();
+            if (!found)
+            {
+                ArticleImagesDto images = new ArticleImagesDto { };
+                images.src = links.Password;
+                list.Add(images);
+                return Ok("NO");
+            }
+            //TO DO: RETURN ERROR IF FOUND STILL FALSE
+
+
+            foreach (var id in picturesIds)
+            {
+                if (!id.Equals(""))
+                {
+                    ArticleImagesDto images = new ArticleImagesDto { };
+                    images.src = imageStartingString.Substring(0, indexStart);
+                    images.src += id;
+                    images.src += imageStartingString.Substring(indexEnd);
+                    list.Add(images);
+                }
+            }
+
+
+            return Ok(list);*/
+
+            int j = 0;
+
+            string path = links.Password;
+            var indexFirst = path.IndexOf("_");
+            var indexLast = path.LastIndexOf("_");
+            string part1 = path.Substring(0, indexFirst + 1);
+            string part2 = path.Substring(indexLast);
+            List<ArticleImagesDto> list = new List<ArticleImagesDto>();
+            for (int i = 1; i < 10; i++)
+            {
+                string link = part1 + "2_" + i + part2;
+                try
+                {
+                    var response = await CallUrl(link);
+                    ArticleImagesDto images = new ArticleImagesDto { };
+                    images.src = link;
+                    list.Add(images);
+                    j = 0;
+                }
+                catch (Exception)
+                {
+                    j++;
+                    if (j == 2)
+                    {
+                        break;
+                    }
+                }
+
+            }
+
+            return Ok(list);
+        }
 
         /**
         Metoda za krolovanje Zarinog sajta.
@@ -288,7 +381,7 @@ namespace API.Controllers
                 }
             }
             narrowedLinks.RemoveAt(narrowedLinks.Count - 1);
-            foreach (var node in links.ElementAt<HtmlNode>(11).NextSibling.ChildNodes)
+            foreach (var node in links.ElementAt<HtmlNode>(12).NextSibling.ChildNodes)
             {
                 if (node.Name == "li")
                 {
@@ -382,45 +475,7 @@ namespace API.Controllers
         [HttpGet("helper")]
         public ActionResult helper()
         {
-            string[] PullAndBearLinks = {
-                "https://www.pullandbear.com/rs/muskarci/odeca/farmerke-n6347",
-                "https://www.pullandbear.com/rs/muskarci/odeca/pantalone-n6363",
-                "https://www.pullandbear.com/rs/muskarci/odeca/majice-n6323",
-                "https://www.pullandbear.com/rs/muskarci/odeca/polo-majice-n6371",
-                "https://www.pullandbear.com/rs/muskarci/odeca/dukserice-n6382",
-                "https://www.pullandbear.com/rs/muskarci/odeca/jakne-n6335",
-                "https://www.pullandbear.com/rs/muskarci/odeca/bermude-n6308",
-                "https://www.pullandbear.com/rs/muskarci/odeca/kosulje-n6313",
-                "https://www.pullandbear.com/rs/muskarci/odeca/kupace-gace-n6299",
-                "https://www.pullandbear.com/rs/muskarci/odeca/pletenina-n6372",
-"https://www.pullandbear.com/rs/zene/odeca/intimates-n7128",
-"https://www.pullandbear.com/rs/zene/odeca/farmerke-n6581",
-"https://www.pullandbear.com/rs/zene/odeca/cool-jeans-n7044",
-"https://www.pullandbear.com/rs/zene/odeca/pantalone-n6600",
-"https://www.pullandbear.com/rs/zene/odeca/majice-n6541",
-"https://www.pullandbear.com/rs/zene/odeca/topovi-n6644",
-"https://www.pullandbear.com/rs/zene/odeca/dukserice-n6636",
-"https://www.pullandbear.com/rs/zene/odeca/haljine-n6646",
-"https://www.pullandbear.com/rs/zene/odeca/jakne-i-sakoi-n6555",
-"https://www.pullandbear.com/rs/zene/odeca/bluze-i-kosulje-n6525",
-"https://www.pullandbear.com/rs/zene/odeca/kratke-pantalone-n6629",
-"https://www.pullandbear.com/rs/zene/odeca/suknje-n6571",
-"https://www.pullandbear.com/rs/zene/odeca/kombinezoni-i-pantalone-na-tregere-n6599",
-"https://www.pullandbear.com/rs/zene/odeca/pletenina-n6618",
-"https://www.pullandbear.com/rs/zene/odeca/kupaci-kostimi-n6513",
-"https://www.pullandbear.com/rs/zene/odeca/pakovanja-n6979"
-            };
-
-            StringBuilder sb = new StringBuilder();
-            foreach (var man in PullAndBearLinks)
-            {
-
-                sb.Append(getPullAndBearCategory(man)).Append("\n");
-
-            }
-
-            return Ok(sb.ToString());
-
+            return Ok("sb.ToString()");
         }
 
         private string zaraDetermineCategory(string url)
@@ -491,6 +546,15 @@ namespace API.Controllers
             client.DefaultRequestHeaders.Accept.Clear();
             var response = await client.GetStringAsync(fullUrl);
             return response;
+        }
+
+        private static async Task<bool> CheckUrl(string fullUrl)
+        {
+            var client = new HttpClient();
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
+            client.DefaultRequestHeaders.Accept.Clear();
+            var response = await client.GetAsync(fullUrl);
+            return response.IsSuccessStatusCode;
         }
 
     }
