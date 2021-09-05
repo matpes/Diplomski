@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Article } from 'src/_models/article';
+import { Pagination } from 'src/_models/pagination';
 import { ArticlesService } from 'src/_services/articles.service';
 
 @Component({
@@ -11,13 +12,19 @@ export class HomeComponent implements OnInit {
 
   articles : Article[]; 
   allArticles : Article[]
+  pagination: Pagination;
+  pageNumber = 1;
+  pageSize = 12;
   constructor(private articlesService: ArticlesService) { }
 
   ngOnInit(): void {
-    this.articlesService.getAllArticles().subscribe( (result:Article[]) =>{
-      this.articles = result;
-      this.allArticles = result
-      // console.log(this.articles);
+    this.loadArticles();
+  }
+
+  loadArticles(){
+    this.articlesService.getAllArticles(this.pageNumber, this.pageSize).subscribe(response => {
+      this.articles = response.result;
+      this.pagination = response.pagination;
     }, err =>{
       console.log(err);
     })
@@ -25,6 +32,11 @@ export class HomeComponent implements OnInit {
 
   selectGender(gender){
     this.articles = this.allArticles.filter(x=>x.gender==gender);
+  }
+
+  pageChanged(event:any){
+    this.pageNumber = event.page;
+    this.loadArticles();
   }
 
 }

@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entitites;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
@@ -21,14 +23,16 @@ namespace API.Data
 
         public async Task<ArticleDto> getArticleByIdAsync(int id)
         {
-            var article = await _context.Articles.Include(p => p.imgSources).SingleAsync(x => x.Id == id);
-            return _mapper.Map<ArticleDto>(article);
+            var article = await _context.Articles.Include(p => p.imgSources).ProjectTo<ArticleDto>(_mapper.ConfigurationProvider).SingleAsync(x => x.Id == id);
+            //return _mapper.Map<ArticleDto>(article);
+            return article;
         }
 
-        public async Task<IEnumerable<ArticleDto>> getArticlesAsync()
+        public async Task<PagedList<ArticleDto>> getArticlesAsync(ArticlesParams articleParams)
         {
-            var articles = await _context.Articles.Include(p => p.imgSources).ToListAsync();
-            return _mapper.Map<IEnumerable<ArticleDto>>(articles);
+            var query = _context.Articles.Include(p => p.imgSources).ProjectTo<ArticleDto>(_mapper.ConfigurationProvider).AsNoTracking();
+            //return _mapper.Map<IEnumerable<ArticleDto>>(articles);
+            return await PagedList<ArticleDto>.CreateAsync(query,articleParams.PageNumber, articleParams.pageSize);
         }
 
         public Task<IEnumerable<ArticleImagesDto>> getPicturesForArticle(ArticleDto article)

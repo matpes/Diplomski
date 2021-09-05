@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entitites;
+using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +18,11 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticles()
+        public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticles([FromQuery]ArticlesParams articleParams)
         {
-            return Ok(await _articlesRepository.getArticlesAsync());
+            var articles = await _articlesRepository.getArticlesAsync(articleParams);
+            Response.AddPaginationHeader(articles.CurrentPage, articles.PageSize, articles.TotalCount, articles.TotalPages);
+            return Ok(articles);
         }
 
         [HttpGet("{id}")]

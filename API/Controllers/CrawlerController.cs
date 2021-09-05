@@ -51,11 +51,147 @@ namespace API.Controllers
         }
 
 
+        /**
+        ===================================
+                    TERRANOVA
+        ===================================
+        */
+        [HttpGet("terranova")]
+        public async Task<ActionResult> crawlTerranova()
+        {
+            var url = "https://www.terranovastyle.com/rs_sr/musko/odeca/";
+            var response = await CallUrl(url);
+            var j = 0;
+
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(response);
+            var links = htmlDoc.DocumentNode.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("js-activateSublevel")).ToList();
+            List<string> newLinks = new List<string>();
+            for (var i = 2; i < 18; i++)
+            {
+                newLinks.Add(links.ElementAt<HtmlNode>(i).Attributes[2].Value);
+            }
+            for (var i = 29; i < 40; i++)
+            {
+                newLinks.Add(links.ElementAt<HtmlNode>(i).Attributes[2].Value);
+            }
+            //OBILAZAK PO KATEGORIJI
+            List<ArticleDto> articlesList = new List<ArticleDto>();
+            foreach (var allArticlesSublink in newLinks)
+            {
+                var gender = 'M';
+                if (allArticlesSublink.Contains("/zensko/"))
+                {
+                    gender = 'F';
+                }
+                var type = getTerranovaCategory(allArticlesSublink);
+                response = await CallUrl(allArticlesSublink);
+                htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(response);
+                var imageLinks = htmlDoc.DocumentNode.Descendants("a").Where(node => node.GetAttributeValue("class", "").Contains("product-item-photo")).ToList();
+                //var imageSources = htmlDoc.DocumentNode.Descendants("img").Where(node => node.GetAttributeValue("class", "").Contains("product-image-photo")).ToList();
+                foreach (var articleHref in imageLinks)
+                {
+                    ArticleDto article = new ArticleDto { };
+                    article.gender = gender;
+                    article.type = type;
+                    article.href = articleHref.Attributes[0].Value;
+                    if (articlesList.FindIndex(x => x.href.Equals(article.href)) == -1)
+                    {
+                        try
+                        {
+
+                            article = getTerranovaImagesForArticle(article);
+                            articlesList.Add(article);
+                        }
+                        catch (Exception)
+                        {
+                            ++j;
+                        }
+                    }
+                }
+
+                // Console.WriteLine("Finnished " + allArticlesSublink);
+
+            }
+            Console.WriteLine("Finnished with " + j + " failed articles");
+            _articlesRepository.insertArrticles(articlesList);
+            return Ok(articlesList);
+
+        }
+
+        private ArticleDto getTerranovaImagesForArticle(ArticleDto article)
+        {
+            var url = article.href;
+            var response = CallUrl(url).Result;
+            HtmlDocument htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(response);
+
+            var images = htmlDocument.DocumentNode.Descendants("img").Where(node => node.GetAttributeValue("class", "").Contains("img-responsive")).ToList();
+            var price = htmlDocument.DocumentNode.Descendants("span").Where(node => node.GetAttributeValue("class", "").Contains("price-wrapper")).ToList();
+            var name = htmlDocument.DocumentNode.Descendants("h1").Where(node => node.GetAttributeValue("class", "").Contains("page-title")).ToList();
+            article.price = price.ElementAt(price.Count - 1).GetAttributeValue("content", "2990");
+            article.name = name.ElementAt(0).ChildNodes[1].InnerText;
+            List<ArticleImagesDto> list = new List<ArticleImagesDto>();
+            var i = 0;
+            foreach (var image in images)
+            {
+                ArticleImagesDto img = new ArticleImagesDto { };
+                var src = image.GetAttributeValue("src", "");
+                if (src.Equals(""))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (src[src.Length - 1].Equals('/'))
+                    {
+                        src = src.Remove(src.Length - 1);
+                    }
+                    var index = src.IndexOf("/it_it/");
+                    if (index != -1)
+                    {
+                        src = src.Remove(index, 6);
+                    }
+                    img.src = src;
+                    list.Add(img);
+                    ++i;
+                }
+                if (i == 5)
+                {
+                    break;
+                }
+            }
+            article.imgSources = list;
+            return article;
+        }
+
+        private string getTerranovaCategory(string url)
+        {
+            var index = url.IndexOf("/odeca/") + 7;
+            StringBuilder sb = new StringBuilder();
+            while (!url[index].Equals('/'))
+            {
+                sb.Append(url[index]);
+                ++index;
+            }
+            return sb.ToString();
+        }
+
+
+
+
+
+
+
+
+
 
         //DOHVACENI SU LINKOVI KA POSEBNIM KATEGORIJAMA
         [HttpPost("bershka")]
-        public ActionResult crawlBershka(LoginDto loginDto)
+        public async Task<ActionResult> crawlBershka(LoginDto loginDto)
         {
+            //Ovde se i sa zensog i sa muskog startnog sajta vide svi linkovi
             var url = "https://www.bershka.com/rs/mu%C5%A1karci-c1010193133.html";
             var response = CallUrl(url).Result;
 
@@ -85,7 +221,7 @@ namespace API.Controllers
                     {
                         //Dosli smo do proizvoda koje zelimo da crawlujemo
                         narrowedLinks.Add("https://www.bershka.com" + links.ElementAt<HtmlNode>(i).FirstChild.Attributes[0].Value);
-                        //Console.WriteLine(links.ElementAt<HtmlNode>(i).InnerText);
+                        Console.WriteLine(links.ElementAt<HtmlNode>(i).InnerText);
                     }
                 }
                 i++;
@@ -95,22 +231,26 @@ namespace API.Controllers
             //DOVDE SVE RADI
 
 
-            // var options = new ChromeOptions()
-            // {
-            //     BinaryLocation = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-            // };
-            // options.AddArguments(new List<string>() { "headless", "disable-gpu" });
-            // var browser = new ChromeDriver(options);
+            var linksQueryString = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+
+            var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
+            var page = await browser.NewPageAsync();
+
+
             foreach (var newUrl in narrowedLinks)
             {
-                response = CallUrl(newUrl).Result;
+                await page.GoToAsync(newUrl, fasterPuppeteerNavigationOptions);
+                var urls = await page.EvaluateExpressionAsync<string[]>(linksQueryString);
 
-                htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(response);
 
-                var linkovi = htmlDoc.DocumentNode.Descendants("a").ToList();
+                // response = CallUrl(newUrl).Result;
 
-                return Ok(response);
+                // htmlDoc = new HtmlDocument();
+                // htmlDoc.LoadHtml(response);
+
+                //var linkovi = htmlDoc.DocumentNode.Descendants("a").ToList();
+
+                return Ok(urls);
 
             }
 
@@ -119,6 +259,21 @@ namespace API.Controllers
 
 
 
+        /**
+        ======================================
+                        P&B
+        =====================================
+        Metoda za krolovanje PullAndBear sajta.
+        RADI.
+
+        VREME IZVRSAVANJA: Oko 35 minuta
+        TO DO: EVENTUALNO DODATI I DOHVATANJE BOJE ARTIKLA
+        TO DO: PROVERITI DA LI ARTIKALA VEC IMA U BAZI
+
+        PARAMS:
+        RETURNS: ActionResult
+
+        */
         [HttpGet("PullAndBear")]
         public async Task<ActionResult> crawlPullAndBear()
         {
@@ -235,12 +390,16 @@ namespace API.Controllers
                 string link = part1 + "2_" + i + part2;
                 ArticleImagesDto images = new ArticleImagesDto { };
                 images.src = link;
-                try{
+                try
+                {
                     await CallUrl(link);
                     list.Add(images);
-                }catch(Exception){
-                    
-                    if(++j==2){
+                }
+                catch (Exception)
+                {
+
+                    if (++j == 2)
+                    {
                         break;
                     }
                 }
@@ -347,11 +506,15 @@ namespace API.Controllers
         }
 
         /**
+        ======================================
+                        ZARA
+        =====================================
         Metoda za krolovanje Zarinog sajta.
         RADI.
 
+        VREME IZVRSAVANJA: Oko 10 minuta
         TO DO: EVENTUALNO DODATI I DOHVATANJE BOJE ARTIKLA
-
+        TO DO: ISPRAVITI HARDKODOVANO DOHVATANJE KATEGORIJE 
         TO DO: PROVERITI DA LI ARTIKALA VEC IMA U BAZI
 
         PARAMS:
@@ -471,13 +634,6 @@ namespace API.Controllers
             return Ok("LOL");
         }
 
-
-        [HttpGet("helper")]
-        public ActionResult helper()
-        {
-            return Ok("sb.ToString()");
-        }
-
         private string zaraDetermineCategory(string url)
         {
             int i = url.IndexOf("man-");
@@ -537,6 +693,14 @@ namespace API.Controllers
             return details;
         }
 
+
+
+
+        [HttpGet("helper")]
+        public ActionResult helper()
+        {
+            return Ok("sb.ToString()");
+        }
 
 
         private static async Task<string> CallUrl(string fullUrl)

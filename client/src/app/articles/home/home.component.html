@@ -50,6 +50,20 @@
                     <br>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center">
+                    <pagination [boundaryLinks]="true" 
+                    [maxSize] = "10"
+                    [totalItems]="pagination.TotalItems" 
+                    [itemsPerPage]="pagination.ItemsPerPage"
+                    [(ngModel)]="pagination.CurrentPage"
+                    (pageChanged) = "pageChanged($event)"
+                    previousText="&lsaquo;" nextText="&rsaquo;"
+                        firstText="&laquo;" lastText="&raquo;">
+
+                    </pagination>
+                </div>
+            </div>
 
         </div>
 

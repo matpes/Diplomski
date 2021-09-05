@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
+using API.Helpers;
 
 namespace API.Interfaces
 {
@@ -9,7 +10,7 @@ namespace API.Interfaces
         void Update(ArticleDto article);
         void insertArticle(ArticleDto article);
         void insertArrticles(ICollection<ArticleDto> articles);
-        Task<IEnumerable<ArticleDto>> getArticlesAsync();
+        Task<PagedList<ArticleDto>> getArticlesAsync(ArticlesParams articleParams);
         Task<ArticleDto> getArticleByIdAsync(int id);
         Task<IEnumerable<ArticleImagesDto>> getPicturesForArticle(ArticleDto article);
 
