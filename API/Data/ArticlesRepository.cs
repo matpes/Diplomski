@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entitites;
@@ -30,8 +31,7 @@ namespace API.Data
 
         public async Task<PagedList<ArticleDto>> getArticlesAsync(ArticlesParams articleParams)
         {
-            var query = _context.Articles.Include(p => p.imgSources).ProjectTo<ArticleDto>(_mapper.ConfigurationProvider).AsNoTracking();
-            //return _mapper.Map<IEnumerable<ArticleDto>>(articles);
+            var query = _context.Articles.OrderBy(p => p.gender).ThenBy(p => p.type).ThenBy(p => p.price).Include(p => p.imgSources).ProjectTo<ArticleDto>(_mapper.ConfigurationProvider).AsNoTracking();
             return await PagedList<ArticleDto>.CreateAsync(query,articleParams.PageNumber, articleParams.pageSize);
         }
 

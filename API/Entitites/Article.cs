@@ -11,5 +11,7 @@ namespace API.Entitites
         public char gender { get; set; }
         public string type { get; set; }
         public ICollection<ArticleImages> imgSources { get; set; }
+        public int storeId { get; set; }
+        public Store store;
     }
 }

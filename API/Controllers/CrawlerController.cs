@@ -96,6 +96,7 @@ namespace API.Controllers
                     article.gender = gender;
                     article.type = type;
                     article.href = articleHref.Attributes[0].Value;
+                    article.storeId = 3;
                     if (articlesList.FindIndex(x => x.href.Equals(article.href)) == -1)
                     {
                         try
@@ -111,7 +112,7 @@ namespace API.Controllers
                     }
                 }
 
-                // Console.WriteLine("Finnished " + allArticlesSublink);
+                Console.WriteLine("Finnished " + allArticlesSublink);
 
             }
             Console.WriteLine("Finnished with " + j + " failed articles");

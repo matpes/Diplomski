@@ -10,9 +10,9 @@ namespace API.Data
         }
 
         public DbSet<AppUser> Users { get; set; }
-
         public DbSet<Article> Articles {get; set;}
         public DbSet<ArticleImages> ArticleImages {get; set;}
+        public DbSet<Store> Stores {get; set;} 
 
     }
 }

@@ -3,14 +3,16 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210905105332_AddedStoreMigration")]
+    partial class AddedStoreMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,9 +24,6 @@ namespace API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
-
                     b.Property<byte[]>("PasswordHash")
                         .HasColumnType("BLOB");
 
@@ -32,21 +31,6 @@ namespace API.Data.Migrations
                         .HasColumnType("BLOB");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("dateOfBirth")
-                        .HasColumnType("TEXT");
-
-                    b.Property<char>("gender")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("mail")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("surname")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

@@ -15,16 +15,18 @@ export class HomeComponent implements OnInit {
   pagination: Pagination;
   pageNumber = 1;
   pageSize = 12;
-  constructor(private articlesService: ArticlesService) { }
+  constructor(private articlesService: ArticlesService) {
+    this.loadArticles();
+   }
 
   ngOnInit(): void {
-    this.loadArticles();
   }
 
   loadArticles(){
     this.articlesService.getAllArticles(this.pageNumber, this.pageSize).subscribe(response => {
       this.articles = response.result;
       this.pagination = response.pagination;
+      console.log(this.articles);
     }, err =>{
       console.log(err);
     })
@@ -36,6 +38,12 @@ export class HomeComponent implements OnInit {
 
   pageChanged(event:any){
     this.pageNumber = event.page;
+    this.loadArticles();
+  }
+
+  numberChanged(number){
+    this.pageSize = number;
+    console.log(this.pageSize);
     this.loadArticles();
   }
 

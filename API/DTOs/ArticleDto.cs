@@ -11,5 +11,7 @@ namespace API.DTOs
         public string price { get; set; }
         public char gender { get; set; }
         public string type { get; set; }
+        public int storeId;
+        public StoreDto store;
     }
 }

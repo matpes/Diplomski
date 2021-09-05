@@ -32,13 +32,15 @@
         <div class="col-8">
             <div class="row">
                 <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3" *ngFor="let article of articles">
-                    <a href="/article/{{article.id}}">
-                        <div class="picture pictureLink">
+                    <a href="/article/{{article.id}}" class="card">
+                        <div class="picture pictureLink ">
 
                             <div class="text-center" style="height: 70px;">
                                 <b>{{article.name}}</b>
                             </div>
-                            <img src="{{article.imgSources[0].src}}" alt="" class="img-fluid">
+                            <div class="card-img-wrapper">
+                                <img src="{{article.imgSources[0].src}}" alt="" class="img-fluid">
+                            </div>
                             <div class="text-center">
                                 <b>
                                     {{article.price}}
@@ -52,19 +54,42 @@
             </div>
             <div class="row">
                 <div class="col-12 d-flex justify-content-center">
-                    <pagination [boundaryLinks]="true" 
-                    [maxSize] = "10"
-                    [totalItems]="pagination.TotalItems" 
-                    [itemsPerPage]="pagination.ItemsPerPage"
-                    [(ngModel)]="pagination.CurrentPage"
-                    (pageChanged) = "pageChanged($event)"
-                    previousText="&lsaquo;" nextText="&rsaquo;"
+                    <pagination [boundaryLinks]="true" [maxSize]="10" [totalItems]="pagination.TotalItems"
+                        [itemsPerPage]="pagination.ItemsPerPage" [(ngModel)]="pagination.CurrentPage"
+                        (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;"
                         firstText="&laquo;" lastText="&raquo;">
 
                     </pagination>
                 </div>
             </div>
 
+        </div>
+        <div class="col-2">
+            <div class="dont-move-right">
+                <form>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>
+                                Broj artikala po stranici:
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <select name="numberOfItems" id="" class="form-control" [(ngModel)]="pageSize"
+                                    (change)="numberChanged(pageSize)">
+                                    <option value="4">4</option>
+                                    <option value="8">8</option>
+                                    <option value="12">12</option>
+                                    <option value="24">24</option>
+                                    <option value="48">48</option>
+                                    <option value="96">96</option>
+                                </select>
+
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
         </div>
 
     </div>

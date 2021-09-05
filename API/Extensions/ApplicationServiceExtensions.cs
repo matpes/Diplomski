@@ -14,6 +14,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddScoped<IArticlesRepository, ArticlesRepository>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(config.GetConnectionString("DefaultConnection"));
