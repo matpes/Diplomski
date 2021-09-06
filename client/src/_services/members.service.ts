@@ -1,12 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppUser } from 'src/_models/appUser';
 
-const httpOptions = {
-  headers: new HttpHeaders({
-    Autorization: 'Bearer' + JSON.parse(localStorage.getItem('user')).token
-  })
-}
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +13,15 @@ export class MembersService {
 
 
   getUsers(){
-    return this.http.get<AppUser>(`${this.baseUrl}users`, httpOptions);
+    return this.http.get<AppUser>(`${this.baseUrl}users`);
   }
 
   getUser(username){
-    return this.http.get<AppUser>(`${this.baseUrl}users/${username}`, httpOptions);
+    return this.http.get<AppUser>(`${this.baseUrl}users/${username}`);
+  }
+
+  updateUser(appUser: AppUser){
+    return this.http.put<AppUser>(`${this.baseUrl}users`, appUser);
   }
 
 

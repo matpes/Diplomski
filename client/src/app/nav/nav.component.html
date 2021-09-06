@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Shopping center</a>
         <div class="float-left">
@@ -18,10 +18,10 @@
                 </li>
             </ul>
         </div>
-        <div class="dropdown" *ngIf="accountService.currentUser$ | async" dropdown>
-            <a class="dropdown-toggle text-light" dropdownToggle>Welcome user</a>
+        <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
+            <a class="dropdown-toggle text-light" dropdownToggle>Welcome {{user.username | titlecase}}</a>
             <div class="dropdown-menu mt-3" *dropdownMenu>
-                <a class="dropdown-item">Edit profile</a>
+                <a href="/user/edit" class="dropdown-item">Edit profile</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" (click)="logout()">Log out</a>
             </div>
@@ -32,7 +32,7 @@
                 placeholder="Username">
             <input name="password" [(ngModel)]="model.password" class="form-control me-2" type="password"
                 placeholder="Password">
-            <button class="btn btn-outline-info" type="submit">Login</button>
+            <button class="btn btn-secondary" type="submit">Login</button>
         </form>
     </div>
 </nav>

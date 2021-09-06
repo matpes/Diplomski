@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { AccountService } from 'src/_services/account.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class RegisterComponent implements OnInit {
   registerMode = false;
 
 
-  constructor(private http: HttpClient, private accountService: AccountService) { }
+  constructor(private http: HttpClient, private accountService: AccountService, private toastr:ToastrService) { }
 
   ngOnInit(): void {
   }
@@ -29,6 +30,7 @@ export class RegisterComponent implements OnInit {
       this.cancel();
     }, err =>{
       console.log(err);
+      this.toastr.error(err.error)
     });
     console.log(this.model);
   }

@@ -1,0 +1,79 @@
+<div class="row" *ngIf="appUser">
+    <div class="col-4">
+        <h1>Vas profil</h1>
+    </div>
+    <div class="col-8">
+        <div class="alert alert-warning" *ngIf="editForm.dirty" style="color: black;" >
+                <strong>
+                    Informacije:
+                </strong>
+                Napravili ste izmene.   Sve nesačuvane izmene će biti izgubljene.
+        </div>
+    </div>
+<!-- </div>
+<div class="row" *ngIf="appUser"> -->
+    <div class="col-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div>
+                    <strong>Korisničko ime:</strong>
+                    <p>{{appUser.userName}}</p>
+                </div>
+                <div>
+                    <strong>Mail:</strong>
+                    <p>{{appUser.mail}}</p>
+                </div>
+                <div>
+                    <strong>Broj godina:</strong>
+                    <p>{{appUser.age}}</p>
+                </div>
+                <div>
+                    <strong>Član od:</strong>
+                    <p>{{appUser.created}}</p>
+                </div>
+            </div>
+            <div class="card-footer bg-secondary">
+                <button [disabled]="!editForm.dirty" form="editForm" type="submit"  class="btn btn-primary btn-block">
+                    Sačuvaj izmene
+                </button>
+                <button class="btn btn-primary btn-block">
+                    Promeni lozinku
+                </button>
+                <br>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-8">
+        <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
+            <h4><label for="mail">Mail</label></h4>
+            <input [(ngModel)]="appUser.mail" type="text" id="mail" name="mail" class="form-control">
+            <br>
+            <h4><label for="name">Ime</label></h4>
+            <input [(ngModel)]="appUser.name" type="text" id="name" name="name" class="form-control">
+            <br>
+            <h4><label for="surname">Prezime</label></h4>
+            <input [(ngModel)]="appUser.surname" type="text" id="surname" name="surname" class="form-control">
+            <br>
+            <h4>Pol</h4>
+            <select [(ngModel)]="appUser.gender" name="gender" id="gender" class="select form-control">
+                <option value="M">Muško</option>
+                <option value="F">Žensko</option>
+                <option value=" ">Ostalo</option>
+            </select>
+            
+            
+
+        </form>
+    </div>
+</div>
+
+
+
+
+            <!-- <h4><label for="password">Lozinka</label></h4>
+            <input type="password" name="password" id="password" class="form-control">
+            <br>
+            <h4><label for="reperatedPassword">Ponovljena lozinka</label></h4>
+            <input type="password" name="reperatedPassword" id="reperatedPassword" class="form-control"> -->
+            

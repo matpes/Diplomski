@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -12,6 +12,9 @@ import { HomeComponent } from './articles/home/home.component';
 import { SingleArticleComponent } from './articles/home/single-article/single-article.component';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { JwtInterceptor } from 'src/_interceptors/jwt.interceptor';
+import { UserEditComponent } from './members/user-edit/user-edit.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,8 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     NavComponent,
     RegisterComponent,
     HomeComponent,
-    SingleArticleComponent
+    SingleArticleComponent,
+    UserEditComponent
   ],
   imports: [
     BrowserModule,
@@ -27,11 +31,16 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-right'
+    }),
     BsDropdownModule.forRoot(),
     CarouselModule.forRoot(),
     PaginationModule.forRoot()
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi:true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -54,7 +54,7 @@
             </div>
             <div class="row">
                 <div class="col-12 d-flex justify-content-center">
-                    <pagination [boundaryLinks]="true" [maxSize]="10" [totalItems]="pagination.TotalItems"
+                    <pagination *ngIf="pagination" [boundaryLinks]="true" [maxSize]="10" [totalItems]="pagination.TotalItems"
                         [itemsPerPage]="pagination.ItemsPerPage" [(ngModel)]="pagination.CurrentPage"
                         (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;"
                         firstText="&laquo;" lastText="&raquo;">
@@ -75,8 +75,8 @@
                         </tr>
                         <tr>
                             <td>
-                                <select name="numberOfItems" id="" class="form-control" [(ngModel)]="pageSize"
-                                    (change)="numberChanged(pageSize)">
+                                <select name="numberOfItems" id="" class="form-control" [(ngModel)]="pageSize" (ngModelChange)="numberChanged($event)"
+                                    >
                                     <option value="4">4</option>
                                     <option value="8">8</option>
                                     <option value="12">12</option>

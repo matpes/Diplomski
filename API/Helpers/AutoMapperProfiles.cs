@@ -9,13 +9,11 @@ namespace API.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<ArticleDto, Article>();
-            CreateMap<ArticleImagesDto, ArticleImages>();
-            CreateMap<Article, ArticleDto>();
-            CreateMap<ArticleImages, ArticleImagesDto>();
-            CreateMap<Store, StoreDto>();
-            CreateMap<StoreDto, Store>();
+            CreateMap<ArticleDto, Article>().ReverseMap();
+            CreateMap<ArticleImagesDto, ArticleImages>().ReverseMap();
+            CreateMap<Store, StoreDto>().ReverseMap();
             CreateMap<AppUser, AppUserDto>().ForMember(dest => dest.age, opt => opt.MapFrom(src => src.dateOfBirth.CalculateAge()));
+            CreateMap<AppUserUpdateDto, AppUser>();
         }
     }
 }
