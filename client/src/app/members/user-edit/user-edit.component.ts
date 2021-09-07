@@ -15,8 +15,13 @@ import { MembersService } from 'src/_services/members.service';
 export class UserEditComponent implements OnInit {
 
   @ViewChild('editForm') editForm: NgForm;
+  @ViewChild('editForm') editPasswordForm: NgForm;
+  
   appUser: AppUser;
   user: User;
+  oldPass: string;
+  newPass: string;
+  confirmedPass;
 
   constructor(private accountService: AccountService, private memberService: MembersService, private toastr: ToastrService) {
     accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
@@ -37,6 +42,22 @@ export class UserEditComponent implements OnInit {
       this.toastr.success("Profi uspešno ažuriran");
       this.editForm.reset(this.appUser);
     });
+  }
+
+  updatePassword() {
+    if (this.newPass!= undefined && this.newPass!= "" && this.newPass == this.confirmedPass) {
+      this.memberService.updateUserPassword(this.user.username, this.oldPass, this.newPass).subscribe( () => {
+        this.toastr.success("Lozinka uspešno promenjena");
+        this.oldPass = this.newPass = this.confirmedPass = "";
+      }, err => {
+        console.log(err);
+        this.oldPass = this.newPass = this.confirmedPass = "";
+        this.toastr.error("Lozinka nije uspešno promenjena");
+      });
+    }else{
+      this.toastr.error("Lozinka nije uspesno potvrdjena");
+    }
+    this.editPasswordForm.reset();
   }
 
 }

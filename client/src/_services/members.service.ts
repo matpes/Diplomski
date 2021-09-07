@@ -21,8 +21,16 @@ export class MembersService {
   }
 
   updateUser(appUser: AppUser){
-    return this.http.put<AppUser>(`${this.baseUrl}users`, appUser);
+    return this.http.put(`${this.baseUrl}users`, appUser);
   }
 
+  updateUserPassword(username:string, oldPass: string, newPass: string) {
+    let data = {
+      'Username': username,
+      'Password' : oldPass,
+      'NewPassword' : newPass
+    }
+    return this.http.post(`${this.baseUrl}users/password`, data);
+  }
 
 }

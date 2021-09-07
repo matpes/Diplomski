@@ -15,6 +15,9 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { JwtInterceptor } from 'src/_interceptors/jwt.interceptor';
 import { UserEditComponent } from './members/user-edit/user-edit.component';
 import { ToastrModule } from 'ngx-toastr';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { LoadingInterceptor } from 'src/_interceptors/loading.interceptor';
 
 @NgModule({
   declarations: [
@@ -36,10 +39,13 @@ import { ToastrModule } from 'ngx-toastr';
     }),
     BsDropdownModule.forRoot(),
     CarouselModule.forRoot(),
-    PaginationModule.forRoot()
+    PaginationModule.forRoot(),
+    TabsModule.forRoot(),
+    NgxSpinnerModule
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi:true}
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi:true},
+    {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi:true}
   ],
   bootstrap: [AppComponent]
 })

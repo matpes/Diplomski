@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
@@ -13,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Authorize]
+    // [Authorize]
     public class UsersController : BaseApiController
     {
         private readonly IUsersRepository _usersRepository;
@@ -43,15 +46,56 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateUser(AppUserUpdateDto appUserUpdateDto)
         {
-            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _usersRepository.GetUserByUsernameAsync(username);
+
+            // var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var user = await _usersRepository.GetUserByUsernameAsync(appUserUpdateDto.userName);
 
             _mapper.Map(appUserUpdateDto, user);
             _usersRepository.Update(user);
 
-            if(await _usersRepository.SaveAllAsync()){
+            if (await _usersRepository.SaveAllAsync())
+            {
                 return NoContent();
-            }else{
+            }
+            else
+            {
+                return BadRequest("Failed to update user");
+            }
+        }
+
+        [HttpPost("password")]
+        public async Task<ActionResult> UpdateUserPassword(LoginDto loginDto)
+        {
+
+            var user = await _usersRepository.GetUserByUsernameAsync(loginDto.Username);
+            if (user == null)
+            {
+                return BadRequest("Inavlid username");
+            }
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+            for (int i = 0; i < computedHash.Length; i++)
+            {
+                if (computedHash[i] != user.PasswordHash[i])
+                {
+                    return BadRequest("Inavlid password");
+                }
+            }
+
+            using var hmacNew = new HMACSHA512();
+
+            user.PasswordHash = hmacNew.ComputeHash(Encoding.UTF8.GetBytes(loginDto.NewPassword));
+            user.PasswordSalt = hmacNew.Key;
+
+            _usersRepository.Update(user);
+
+            if (await _usersRepository.SaveAllAsync())
+            {
+                return NoContent();
+            }
+            else
+            {
                 return BadRequest("Failed to update user");
             }
         }
