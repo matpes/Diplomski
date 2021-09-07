@@ -53,12 +53,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12 d-flex justify-content-center">
+                <div class="col-12 d-flex justify-content-center newBackground">
                     <pagination *ngIf="pagination" [boundaryLinks]="true" [maxSize]="10" [totalItems]="pagination.TotalItems"
                         [itemsPerPage]="pagination.ItemsPerPage" [(ngModel)]="pagination.CurrentPage"
                         (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;"
-                        firstText="&laquo;" lastText="&raquo;">
-
+                        firstText="&laquo;" lastText="&raquo;" class="newBackground">
                     </pagination>
                 </div>
             </div>

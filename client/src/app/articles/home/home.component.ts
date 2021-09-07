@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
   allArticles : Article[]
   pagination: Pagination;
   pageNumber = 1;
-  pageSize = 12;
+  pageSize = 4;
   constructor(private articlesService: ArticlesService) {
     this.loadArticles();
    }

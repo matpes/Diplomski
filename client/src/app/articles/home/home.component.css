@@ -41,3 +41,14 @@
  .card-img-wrapper{
     overflow: hidden;
  }
+
+ .newBackground ul li a{
+   background-color: rgb(255, 120, 81) !important;
+ }
+
+ .active .page-link {
+   z-index: 3;
+   color: #fff;
+   background-color: rgb(255, 120, 81) !important;
+   border-color: rgb(255, 120, 81) !important;
+}

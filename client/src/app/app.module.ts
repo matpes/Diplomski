@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './articles/home/home.component';
@@ -18,6 +18,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { LoadingInterceptor } from 'src/_interceptors/loading.interceptor';
+import { TextInputComponent } from './_forms/text-input/text-input.component';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { LoadingInterceptor } from 'src/_interceptors/loading.interceptor';
     RegisterComponent,
     HomeComponent,
     SingleArticleComponent,
-    UserEditComponent
+    UserEditComponent,
+    TextInputComponent
   ],
   imports: [
     BrowserModule,
@@ -34,6 +37,7 @@ import { LoadingInterceptor } from 'src/_interceptors/loading.interceptor';
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right'
     }),
@@ -41,6 +45,7 @@ import { LoadingInterceptor } from 'src/_interceptors/loading.interceptor';
     CarouselModule.forRoot(),
     PaginationModule.forRoot(),
     TabsModule.forRoot(),
+    BsDatepickerModule.forRoot(),
     NgxSpinnerModule
   ],
   providers: [

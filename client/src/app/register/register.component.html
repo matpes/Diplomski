@@ -13,28 +13,90 @@
             </button>
         </div>
     </div>
-    
+
 
     <div *ngIf="registerMode" class="container">
         <div class="row justify-content-center">
             <div class="col-4">
-                <form #registerForm='ngForm' (ngSubmit)="register()" autocomplete="off">
+                <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off">
                     <h2 class="text-center text-primary">Sign up</h2>
                     <hr>
                     <div class="form-group">
-                        <input type="text" class="form-control" name="username" 
-                        [(ngModel)]="model.username" placeholder="Username">
+                        <input type="text" [class.is-invalid]='registerForm.get("username").errors 
+                            && registerForm.get("username").touched' class="form-control" formControlName='username'
+                            placeholder="Username">
+                        <div class="invalid-feedback">Molimo vas unesite korisničko ime</div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" [class.is-invalid]='registerForm.get("mail").errors 
+                            && registerForm.get("mail").touched' class="form-control" formControlName='mail'
+                            placeholder="Mail">
+                        <div class="invalid-feedback">Molimo vas unesite vaš mail</div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" [class.is-invalid]='registerForm.get("name").errors 
+                            && registerForm.get("name").touched' class="form-control" formControlName='name'
+                            placeholder="Ime">
+                        <div class="invalid-feedback">Molimo vas unesite vaše ime</div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" [class.is-invalid]='registerForm.get("surname").errors 
+                            && registerForm.get("surname").touched' class="form-control" formControlName='surname'
+                            placeholder="Prezime">
+                        <div class="invalid-feedback">Molimo vas unesite vaše prezime</div>
+                    </div>
 
-                        <input type="password" class="form-control" name="password" 
-                        [(ngModel)]="model.password" placeholder="Password">
+                    <div class="form-group">
+                        <select name="gender" id="" formControlName="gender" class="form-control">
+                            <option value="M">Muško</option>
+                            <option value="F">Žensko</option>
+                            <option value=" ">Ostalo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="Datepicker" class="form-control" bsDatepicker
+                        formControlName="dateOfBirth"
+                        [bsConfig]='bsConfig' [maxDate]="maxdate"
+                        [class.is-invalid]='registerForm.get("dateOfBirth").errors 
+                            && registerForm.get("dateOfBirth").touched' placeholder="Datum rođenja"
+                            >
+                        <div class="invalid-feedback">Molimo vas unesite vaš datum rođenja</div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" [class.is-invalid]='registerForm.get("password").errors 
+                            && registerForm.get("password").touched' class="form-control" formControlName='password'
+                            placeholder="Password">
+                        <div *ngIf="registerForm.get('password').hasError('required')" class="invalid-feedback">Molimo
+                            vas unesite lozinku</div>
+                        <div *ngIf="registerForm.get('password').hasError('minlength')" class="invalid-feedback">Lozinka
+                            mora imati najmanje 4 karaktera</div>
+                        <div *ngIf="registerForm.get('password').hasError('maxlength')" class="invalid-feedback">Lozinka
+                            sme imati najviše 8 karaktera</div>
+
+                    </div>
+                    <div class="form-group">
+                        <input type="password" [class.is-invalid]='registerForm.get("confirmedPassword").errors 
+                            && registerForm.get("confirmedPassword").touched' class="form-control"
+                            formControlName='confirmedPassword' placeholder="Confirmed Password">
+                        <div *ngIf="registerForm.get('confirmedPassword').hasError('required')"
+                            class="invalid-feedback">Molimo vas unesite ponovljenu lozinku</div>
+                        <div *ngIf="registerForm.get('confirmedPassword').hasError('isMatching')"
+                            class="invalid-feedback">Potvrđena lozinka nije ista kao lozinka</div>
+
                     </div>
                     <div class="form-group text-center">
-                        <button class="btn btn-success mr-2" type="submit">Register</button>
+                        <button [disabled]="!registerForm.valid" class="btn btn-success mr-2" type="submit">Register</button>
                         <button class="btn btn-default mr-2" type="button" (click)="cancel()">Cancel</button>
-                    
+
                     </div>
                 </form>
-                
+                <p>
+                    Form value: {{registerForm.value | json}}
+                </p>
+                <p>
+                    Form status: {{registerForm.status | json}}
+                </p>
             </div>
         </div>
     </div>
