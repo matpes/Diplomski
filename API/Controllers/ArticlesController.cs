@@ -29,5 +29,10 @@ namespace API.Controllers
         public async Task<ActionResult<ArticleDto>> GetArticleById(int id){
             return Ok(await _articlesRepository.getArticleByIdAsync(id));
         }
+
+        [HttpGet("categories")]
+        public async Task<ActionResult<ArticleDto>> GetCategories(){
+            return Ok(await _articlesRepository.getCategories());
+        }
     }
 }

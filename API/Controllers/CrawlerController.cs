@@ -2,27 +2,57 @@ namespace API.Controllers
 {
     using HtmlAgilityPack;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using System.Net;
     using System.Text;
-    using System.IO;
     using Microsoft.AspNetCore.Mvc;
-    using API.Data;
     using API.DTOs;
     using System.Linq;
     using System.Collections.Generic;
     using System;
 
     using PuppeteerSharp;
-    using API.Entitites;
     using API.Interfaces;
 
-    using OpenQA.Selenium;
-    using OpenQA.Selenium.Chrome;
+
 
     public class CrawlerController : BaseApiController
     {
+
+        private static Dictionary<string, string> PullAndBearCategoryDictionary = new Dictionary<string, string>{
+            {"kombinezoni-i-pantalone-na-tregere", "kombinezoni"},
+            {"kratke-pantalone", "sortsevi"},
+            {"kupaci-kostimi", "odeca-za-plazu"},
+            {"pletenina", "pletena-odeca"},
+            {"jakne-i-sakoi", "kaputi-i-jakne"},
+            {"bluze-i-kosulje", "kosulje"},
+            {"pakovanja", "ostalo"},
+            {"intimates", "ostalo"},
+            {"kupace-gace", "odeca-za-plazu"},
+            {"jakne", "kaputi-i-jakne"},
+            {"bermude", "sortsevi"},
+            {"cool-jeans", "farmerke"}
+        };
+
+        private static Dictionary<string, string> ZaraCategoryDictionary = new Dictionary<string, string>{
+            {"jumpsuits", "kombinezoni"},
+            {"bermudas", "sortsevi"},
+            {"knitwear", "pletena-odeca"},
+            {"blazers", "kaputi-i-jakne"},
+            {"shirts", "kosulje"},
+            {"jeans", "farmerke"},
+            {"jackets", "kaputi-i-jakne"},
+            {"outerwear", "kaputi-i-jakne"},
+            {"sweatshirts", "dukserice"},
+            {"tshirts", "majice"},
+            {"polos", "majice"},
+            {"trousers", "pantalone"},
+            {"tops", "topovi"},
+            {"dresses", "haljine"},
+            {"skirts", "suknje"},
+            {"suits", "odlea"}
+        };
+
         private readonly IArticlesRepository _articlesRepository;
 
         private static readonly LaunchOptions puppeteerLaunchoptions = new LaunchOptions()
@@ -50,11 +80,19 @@ namespace API.Controllers
             _articlesRepository = articlesRepository;
         }
 
-
+        
         /**
         ===================================
                     TERRANOVA
         ===================================
+        Metoda za krolovanje PullAndBear sajta.
+        RADI.
+
+        VREME IZVRSAVANJA: Od 2 - 20 minuta
+        TO DO: PROVERITI DA LI ARTIKALA VEC IMA U BAZI
+
+        PARAMS:
+        RETURNS: ActionResult
         */
         [HttpGet("terranova")]
         public async Task<ActionResult> crawlTerranova()
@@ -176,88 +214,19 @@ namespace API.Controllers
                 sb.Append(url[index]);
                 ++index;
             }
-            return sb.ToString();
+            var kat = sb.ToString();
+            if(kat.Equals("bodi") || kat.Equals("majice-dugih-rukava") ){
+                kat = "majice";
+            } else if(kat.Equals("helanke") || kat.Equals("sportske-pantalone") ){
+                kat = "pantalone";
+            } else if(kat.Equals("prsluci") ){
+                kat = "kaputi-i-jakne";
+            }
+            return kat;
         }
 
 
-
-
-
-
-
-
-
-
-        //DOHVACENI SU LINKOVI KA POSEBNIM KATEGORIJAMA
-        [HttpPost("bershka")]
-        public async Task<ActionResult> crawlBershka(LoginDto loginDto)
-        {
-            //Ovde se i sa zensog i sa muskog startnog sajta vide svi linkovi
-            var url = "https://www.bershka.com/rs/mu%C5%A1karci-c1010193133.html";
-            var response = CallUrl(url).Result;
-
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(response);
-
-            var links = htmlDoc.DocumentNode.Descendants("li").Where(node => node.GetAttributeValue("class", "").Contains("category-line")).ToList();
-            var selecting = false;
-            List<string> narrowedLinks = new List<string>();
-            var i = 0;
-            while (i < links.Count)
-            {
-                if (!selecting)
-                {
-                    if (links.ElementAt<HtmlNode>(i).InnerText == "\n      Najprodavaniji proizvodi\n     ")
-                    {
-                        selecting = true;
-                    }
-                }
-                else
-                {
-                    if (links.ElementAt<HtmlNode>(i).InnerText == "")
-                    {
-                        selecting = false;
-                    }
-                    else
-                    {
-                        //Dosli smo do proizvoda koje zelimo da crawlujemo
-                        narrowedLinks.Add("https://www.bershka.com" + links.ElementAt<HtmlNode>(i).FirstChild.Attributes[0].Value);
-                        Console.WriteLine(links.ElementAt<HtmlNode>(i).InnerText);
-                    }
-                }
-                i++;
-            }
-
-            //Imamo spremne sve linkove (svih 20)
-            //DOVDE SVE RADI
-
-
-            var linksQueryString = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
-
-            var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
-            var page = await browser.NewPageAsync();
-
-
-            foreach (var newUrl in narrowedLinks)
-            {
-                await page.GoToAsync(newUrl, fasterPuppeteerNavigationOptions);
-                var urls = await page.EvaluateExpressionAsync<string[]>(linksQueryString);
-
-
-                // response = CallUrl(newUrl).Result;
-
-                // htmlDoc = new HtmlDocument();
-                // htmlDoc.LoadHtml(response);
-
-                //var linkovi = htmlDoc.DocumentNode.Descendants("a").ToList();
-
-                return Ok(urls);
-
-            }
-
-            return null;
-        }
-
+        
 
 
         /**
@@ -268,7 +237,6 @@ namespace API.Controllers
         RADI.
 
         VREME IZVRSAVANJA: Oko 35 minuta
-        TO DO: EVENTUALNO DODATI I DOHVATANJE BOJE ARTIKLA
         TO DO: PROVERITI DA LI ARTIKALA VEC IMA U BAZI
 
         PARAMS:
@@ -315,7 +283,11 @@ namespace API.Controllers
             int j = str.LastIndexOf("-n");
             string ret;
             ret = str.Substring(i, j - i);
-            return ret;
+            string output;
+            if(!PullAndBearCategoryDictionary.TryGetValue(ret, out output)){
+                output = ret;
+            }
+            return output;
         }
 
         private List<string> getPullAndBearLinksLevel1(string param, string[] urls)
@@ -363,9 +335,11 @@ namespace API.Controllers
                     article.type = type;
                     article.href = a.Attributes[0].Value;
                     article.name = a.ChildNodes[1].InnerHtml;
-                    article.price = a.ChildNodes[2].InnerHtml + " RSD";
+                    article.price = a.ChildNodes[2].InnerHtml;
                     var image = a.FirstChild.Attributes[0].Value;
-
+                    if(article.price.IndexOf(" - ") != -1){
+                        article.price = article.price.Remove(article.price.IndexOf(" - "));
+                    }
                     if (articlesList.FindIndex(x => x.href.Equals(article.href)) == -1)
                     {
                         article = await getPullAndBearImagesForArticle(article, image);
@@ -417,94 +391,7 @@ namespace API.Controllers
             return article;
         }
 
-        [HttpPost("testPictures")]
-        public async Task<ActionResult<ICollection<ArticleImagesDto>>> getPullAndBearImagesForArticle(LoginDto links)
-        {
 
-            /*var url = links.Username;
-            var imageStartingString = links.Password;
-            var endIndex = imageStartingString.IndexOf(".jpg") + 4;
-            imageStartingString = imageStartingString.Substring(0, endIndex);
-            var ids = @"Array.from(document.querySelectorAll('img')).map(img => img.id);";
-            var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
-            //MEN
-            var page = await browser.NewPageAsync();
-            await page.GoToAsync(url, fasterPuppeteerNavigationOptions);
-            var picturesIds = await page.EvaluateExpressionAsync<string[]>(ids);
-
-            var found = false;
-            var originId = "";
-            var indexStart = 0;
-            var indexEnd = 0;
-            foreach (var id in picturesIds)
-            {
-                if ((!("").Equals(id)) && imageStartingString.Contains(id))
-                {
-                    found = true;
-                    originId = id;
-                    indexStart = imageStartingString.IndexOf(id);
-                    indexEnd = indexStart + id.Length;
-                    break;
-                }
-            }
-            List<ArticleImagesDto> list = new List<ArticleImagesDto>();
-            if (!found)
-            {
-                ArticleImagesDto images = new ArticleImagesDto { };
-                images.src = links.Password;
-                list.Add(images);
-                return Ok("NO");
-            }
-            //TO DO: RETURN ERROR IF FOUND STILL FALSE
-
-
-            foreach (var id in picturesIds)
-            {
-                if (!id.Equals(""))
-                {
-                    ArticleImagesDto images = new ArticleImagesDto { };
-                    images.src = imageStartingString.Substring(0, indexStart);
-                    images.src += id;
-                    images.src += imageStartingString.Substring(indexEnd);
-                    list.Add(images);
-                }
-            }
-
-
-            return Ok(list);*/
-
-            int j = 0;
-
-            string path = links.Password;
-            var indexFirst = path.IndexOf("_");
-            var indexLast = path.LastIndexOf("_");
-            string part1 = path.Substring(0, indexFirst + 1);
-            string part2 = path.Substring(indexLast);
-            List<ArticleImagesDto> list = new List<ArticleImagesDto>();
-            for (int i = 1; i < 10; i++)
-            {
-                string link = part1 + "2_" + i + part2;
-                try
-                {
-                    var response = await CallUrl(link);
-                    ArticleImagesDto images = new ArticleImagesDto { };
-                    images.src = link;
-                    list.Add(images);
-                    j = 0;
-                }
-                catch (Exception)
-                {
-                    j++;
-                    if (j == 2)
-                    {
-                        break;
-                    }
-                }
-
-            }
-
-            return Ok(list);
-        }
 
         /**
         ======================================
@@ -514,7 +401,6 @@ namespace API.Controllers
         RADI.
 
         VREME IZVRSAVANJA: Oko 10 minuta
-        TO DO: EVENTUALNO DODATI I DOHVATANJE BOJE ARTIKLA
         TO DO: ISPRAVITI HARDKODOVANO DOHVATANJE KATEGORIJE 
         TO DO: PROVERITI DA LI ARTIKALA VEC IMA U BAZI
 
@@ -606,41 +492,13 @@ namespace API.Controllers
 
         }
 
-        //OVO SE NE SECAM STA JE
-        [HttpPost("zaraImage")]
-        public async Task<ActionResult> zaraGetPuppeter(ArticleDto articleDto)
-        {
-
-            //var fullUrl = "https://www.bershka.com/rs/%C5%BEene/ode%C4%87a/majice-i-topovi-c1010193217.html";
-            // var fullUrl = "https://www.zara.com/rs/sr/woman-blazers-l1055.html?v1=1882227";
-            var fullUrl = articleDto.href;
-            var response = await CallUrl(fullUrl);
-
-            var options = new LaunchOptions()
-            {
-                Headless = true,
-                ExecutablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-                Product = Product.Chrome
-            };
-            var browser = await Puppeteer.LaunchAsync(options, null);
-            var page = await browser.NewPageAsync();
-            await page.GoToAsync(fullUrl, new NavigationOptions()
-            {
-                WaitUntil = new WaitUntilNavigation[] { WaitUntilNavigation.Load, WaitUntilNavigation.DOMContentLoaded, WaitUntilNavigation.Networkidle0, WaitUntilNavigation.Networkidle2 },
-                Timeout = 0
-            });
-            var links = @"Array.from(document.querySelectorAll('img')).map(img => img.src);";
-            var urls = await page.EvaluateExpressionAsync<string[]>(links);
-
-            return Ok("LOL");
-        }
 
         private string zaraDetermineCategory(string url)
         {
             int i = url.IndexOf("man-");
             if (i == -1)
             {
-                return "other";
+                return "ostalo";
             }
             i += 4;
             string type = "";
@@ -649,8 +507,12 @@ namespace API.Controllers
                 type += url[i];
                 i++;
             }
-            Console.WriteLine(type);
-            return type;
+
+            string ret;
+            if(! ZaraCategoryDictionary.TryGetValue(type, out ret)){
+                ret = "ostalo";
+            }
+            return ret;
         }
 
         private async Task<ArticleDto> zaraGetArticleInfo(ArticleDto details)
@@ -664,6 +526,9 @@ namespace API.Controllers
             htmlDoc.LoadHtml(response);
             var price = htmlDoc.DocumentNode.Descendants("span").Where(node => node.GetAttributeValue("class", "").Equals("price__amount-current")).First().InnerHtml;
             var title = htmlDoc.DocumentNode.Descendants("h1").Where(node => node.GetAttributeValue("class", "").Equals("product-detail-card-info__name")).First().InnerHtml;
+
+            price = price.Replace(" RSD", "");
+            price = price.Replace(".", "");
 
             details.price = price;
             details.name = title;
@@ -695,15 +560,6 @@ namespace API.Controllers
         }
 
 
-
-
-        [HttpGet("helper")]
-        public ActionResult helper()
-        {
-            return Ok("sb.ToString()");
-        }
-
-
         private static async Task<string> CallUrl(string fullUrl)
         {
             HttpClient client = new HttpClient();
@@ -713,14 +569,82 @@ namespace API.Controllers
             return response;
         }
 
-        private static async Task<bool> CheckUrl(string fullUrl)
+        //UNUSED
+        //DOHVACENI SU LINKOVI KA POSEBNIM KATEGORIJAMA
+        [HttpPost("bershka")]
+        public async Task<ActionResult> crawlBershka(LoginDto loginDto)
         {
-            var client = new HttpClient();
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
-            client.DefaultRequestHeaders.Accept.Clear();
-            var response = await client.GetAsync(fullUrl);
-            return response.IsSuccessStatusCode;
+            //Ovde se i sa zensog i sa muskog startnog sajta vide svi linkovi
+            var url = "https://www.bershka.com/rs/mu%C5%A1karci-c1010193133.html";
+            var response = CallUrl(url).Result;
+
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(response);
+
+            var links = htmlDoc.DocumentNode.Descendants("li").Where(node => node.GetAttributeValue("class", "").Contains("category-line")).ToList();
+            var selecting = false;
+            List<string> narrowedLinks = new List<string>();
+            var i = 0;
+            while (i < links.Count)
+            {
+                if (!selecting)
+                {
+                    if (links.ElementAt<HtmlNode>(i).InnerText == "\n      Najprodavaniji proizvodi\n     ")
+                    {
+                        selecting = true;
+                    }
+                }
+                else
+                {
+                    if (links.ElementAt<HtmlNode>(i).InnerText == "")
+                    {
+                        selecting = false;
+                    }
+                    else
+                    {
+                        //Dosli smo do proizvoda koje zelimo da crawlujemo
+                        narrowedLinks.Add("https://www.bershka.com" + links.ElementAt<HtmlNode>(i).FirstChild.Attributes[0].Value);
+                        Console.WriteLine(links.ElementAt<HtmlNode>(i).InnerText);
+                    }
+                }
+                i++;
+            }
+
+            //Imamo spremne sve linkove (svih 20)
+            //DOVDE SVE RADI
+
+
+            var linksQueryString = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+
+            var browser = await Puppeteer.LaunchAsync(puppeteerLaunchoptions, null);
+            var page = await browser.NewPageAsync();
+
+
+            foreach (var newUrl in narrowedLinks)
+            {
+                await page.GoToAsync(newUrl, fasterPuppeteerNavigationOptions);
+                var urls = await page.EvaluateExpressionAsync<string[]>(linksQueryString);
+
+
+                // response = CallUrl(newUrl).Result;
+
+                // htmlDoc = new HtmlDocument();
+                // htmlDoc.LoadHtml(response);
+
+                //var linkovi = htmlDoc.DocumentNode.Descendants("a").ToList();
+
+                return Ok(urls);
+
+            }
+
+            return null;
         }
+
+        [HttpGet("prices")] public void updatePrices(){
+            _articlesRepository.specialMethod();
+        }
+
+
 
     }
 }

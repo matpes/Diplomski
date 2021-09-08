@@ -11,15 +11,23 @@ import { ArticlesService } from 'src/_services/articles.service';
 export class HomeComponent implements OnInit {
 
   articles : Article[]; 
-  allArticles : Article[]
+  allArticles : Article[];
+  categories : string[];
   pagination: Pagination;
   pageNumber = 1;
   pageSize = 4;
   constructor(private articlesService: ArticlesService) {
+    this.loadCategories();
     this.loadArticles();
    }
 
   ngOnInit(): void {
+  }
+
+  loadCategories(){
+    this.articlesService.getCategories().subscribe((response:string[]) => {
+      this.categories = response;
+    })
   }
 
   loadArticles(){
@@ -32,7 +40,7 @@ export class HomeComponent implements OnInit {
   }
 
   selectGender(gender){
-    this.articles = this.allArticles.filter(x=>x.gender==gender);
+    //this.articles = this.articles.filter(x=>x.gender==gender);
   }
 
   pageChanged(event:any){

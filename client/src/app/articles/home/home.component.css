@@ -18,6 +18,9 @@
  .dont-move{
    position: fixed !important; 
    top: 110px !important;
+   height: 85%;
+   overflow-y: scroll;
+   overflow-x: hidden;
  }
 
  .dont-move-right{

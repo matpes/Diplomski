@@ -13,6 +13,7 @@ namespace API.Interfaces
         Task<PagedList<ArticleDto>> getArticlesAsync(ArticlesParams articleParams);
         Task<ArticleDto> getArticleByIdAsync(int id);
         Task<IEnumerable<ArticleImagesDto>> getPicturesForArticle(ArticleDto article);
-
+        void specialMethod();
+        Task<string[]> getCategories();
     }
 }

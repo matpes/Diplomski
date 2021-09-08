@@ -35,4 +35,8 @@ export class ArticlesService {
     return this.http.get(`${this.baseUrl}/articles/${id}`);
   }
 
+  getCategories() {
+    return this.http.get(`${this.baseUrl}/articles/categories`);
+  }
+
 }

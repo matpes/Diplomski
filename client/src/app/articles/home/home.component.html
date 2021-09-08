@@ -9,21 +9,46 @@
                 <table class="table table-borderless">
                     <tr>
                         <th>
-                            Pol:
+                            <h4>Pol:</h4>
                         </th>
                     </tr>
                     <tr>
-                        <td>
+                        <td style="padding: 0;">
                             <input type="radio" name="gender" id="female" (click)="selectGender('F')">
                             &nbsp;&nbsp;&nbsp;
-                            <label for="female">Zensko</label>
+                            <label for="female" class="mb-0">Žensko</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0;">
+                            <input type="radio" name="gender" id="male" (click)="selectGender('M')">
+                            &nbsp;&nbsp;&nbsp;
+                            <label for="male" class="mb-0">Muško</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0;">
+                            <input type="radio" name="gender" id="all" (click)="selectGender(' ')">
+                            &nbsp;&nbsp;&nbsp;
+                            <label for="all" class="mb-0">Sve</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <h4>
+                                Kategorije:
+                            </h4>
+                        </th>
+                    </tr>
+                    <tr *ngFor="let category of categories">
+                        <td  style="padding: 0;">
+                            <input type="checkbox" name="{{category}}" id="{{category}}"> &nbsp;&nbsp;&nbsp; 
+                            <label for="{{category}}" class="mb-0">{{category |titlecase}}</label>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="radio" name="gender" id="male" (click)="selectGender('M')">
-                            &nbsp;&nbsp;&nbsp;
-                            <label for="male">Musko</label>
+                            <button class="btn bg-warning">Ponisti filtere</button>
                         </td>
                     </tr>
                 </table>
@@ -68,12 +93,12 @@
                 <form>
                     <table class="table table-borderless">
                         <tr>
-                            <th>
+                            <th style="padding-bottom: 0;">
                                 Broj artikala po stranici:
                             </th>
                         </tr>
                         <tr>
-                            <td>
+                            <td style="padding-top: 5px;">
                                 <select name="numberOfItems" id="" class="form-control" [(ngModel)]="pageSize" (ngModelChange)="numberChanged($event)"
                                     >
                                     <option value="4">4</option>
@@ -82,6 +107,24 @@
                                     <option value="24">24</option>
                                     <option value="48">48</option>
                                     <option value="96">96</option>
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="mb-0"  style="padding-bottom: 0;">
+                                Sortiraj:
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 5px;">
+                                <select name="sort" class="form-control">
+                                    <option value="0">Po ceni opadajuće</option>
+                                    <option value="1">Po ceni rastuće</option>
+                                    <option value="2">Po nazivu opadajuće</option>
+                                    <option value="3">Po nazivu rastuće</option>
+                                    <option value="4">Po kategorijama opadjuće</option>
+                                    <option value="5">Po kategorijama rastuće</option>
                                 </select>
 
                             </td>

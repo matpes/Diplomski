@@ -32,7 +32,7 @@ namespace API.Data
         public async Task<PagedList<ArticleDto>> getArticlesAsync(ArticlesParams articleParams)
         {
             var query = _context.Articles.OrderBy(p => p.gender).ThenBy(p => p.type).ThenBy(p => p.price).Include(p => p.imgSources).ProjectTo<ArticleDto>(_mapper.ConfigurationProvider).AsNoTracking();
-            return await PagedList<ArticleDto>.CreateAsync(query,articleParams.PageNumber, articleParams.pageSize);
+            return await PagedList<ArticleDto>.CreateAsync(query, articleParams.PageNumber, articleParams.pageSize);
         }
 
         public Task<IEnumerable<ArticleImagesDto>> getPicturesForArticle(ArticleDto article)
@@ -52,6 +52,27 @@ namespace API.Data
         public void insertArticle(ArticleDto article)
         {
             throw new System.NotImplementedException();
+        }
+
+        public async Task<string[]> getCategories(){
+            return await _context.Articles.Select( x => x.type).Distinct().ToArrayAsync();
+        } 
+
+        public void specialMethod()
+        {
+            var allArticles = _context.Articles.ToList();
+            foreach (var article in allArticles)
+            {
+                if (article.price.IndexOf(" - ") != -1)
+                {
+                    article.price = article.price.Remove(article.price.IndexOf(" - "));
+                }
+                var price = article.price;
+                price = price.Replace(" RSD", "");
+                price = price.Replace(".", "");
+                article.price = price;
+            }
+            _context.SaveChanges();
         }
 
         public void Update(ArticleDto article)
