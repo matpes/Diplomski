@@ -14,11 +14,22 @@ export class ArticlesService {
 
   constructor(private http: HttpClient) { }
 
-  getAllArticles(page?:number, itemsPerPage?:number){
+  getAllArticles(page?:number, itemsPerPage?:number, gender?:string, categories? :string[], sort?: number){
     let params = new HttpParams();
     if(page != null && itemsPerPage != null){
       params = params.append('pageNumber', page.toString());
       params = params.append('pageSize', itemsPerPage.toString());
+    }
+    if(gender != null){
+      params = params.append('Gender', gender);
+    }
+    if(categories != null){
+      for( var i = 0; i < categories.length; i++){
+        params = params.append(`Categories[${i}]`, categories[i]);
+      }
+    }
+    if(sort != null){
+      params = params.append('Sort', sort);
     }
     return this.http.get<Article[]>(`${this.baseUrl}/articles`, {observe: 'response', params}).pipe(
       map(response => {

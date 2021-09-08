@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,8 +33,30 @@ namespace API.Data
 
         public async Task<PagedList<ArticleDto>> getArticlesAsync(ArticlesParams articleParams)
         {
-            var query = _context.Articles.OrderBy(p => p.gender).ThenBy(p => p.type).ThenBy(p => p.price).Include(p => p.imgSources).ProjectTo<ArticleDto>(_mapper.ConfigurationProvider).AsNoTracking();
-            return await PagedList<ArticleDto>.CreateAsync(query, articleParams.PageNumber, articleParams.pageSize);
+            var query = _context.Articles.Include(p => p.imgSources).AsQueryable();
+
+            if (articleParams.Gender.Equals('M') || articleParams.Gender.Equals('F'))
+            {
+                query = query.Where(a => a.gender == articleParams.Gender);
+            }
+            if (articleParams.Categories != null && articleParams.Categories.Count() > 0)
+            {
+                query = query.Where(a => articleParams.Categories.Contains(a.type));
+            }
+
+            query = articleParams.Sort switch
+            {
+                0 => query.OrderByDescending(x => x.price),
+                1 => query.OrderBy(x => x.price),
+                2 => query.OrderByDescending(x => x.name),
+                3 => query.OrderBy(x => x.name),
+                4 => query.OrderByDescending(x => x.type),
+                5 => query.OrderBy(x => x.type),
+                _ => query.OrderByDescending(x => x.price)
+            };
+
+            return await PagedList<ArticleDto>.CreateAsync(query.ProjectTo<ArticleDto>(_mapper.ConfigurationProvider).AsNoTracking(),
+             articleParams.PageNumber, articleParams.pageSize);
         }
 
         public Task<IEnumerable<ArticleImagesDto>> getPicturesForArticle(ArticleDto article)
@@ -54,9 +78,10 @@ namespace API.Data
             throw new System.NotImplementedException();
         }
 
-        public async Task<string[]> getCategories(){
-            return await _context.Articles.Select( x => x.type).Distinct().ToArrayAsync();
-        } 
+        public async Task<string[]> getCategories()
+        {
+            return await _context.Articles.Select(x => x.type).Distinct().ToArrayAsync();
+        }
 
         public void specialMethod()
         {
@@ -78,6 +103,15 @@ namespace API.Data
         public void Update(ArticleDto article)
         {
             _context.Entry(article).State = EntityState.Modified;
+        }
+
+
+        class SortingHelper : IComparer<string>
+        {
+            public int Compare(string x, string y)
+            {
+                return int.Parse(x).CompareTo(int.Parse(y));
+            }
         }
     }
 }

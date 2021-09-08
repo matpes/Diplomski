@@ -6,52 +6,60 @@
                 <h3>
                     Filteri:
                 </h3>
-                <table class="table table-borderless">
-                    <tr>
-                        <th>
-                            <h4>Pol:</h4>
-                        </th>
-                    </tr>
-                    <tr>
-                        <td style="padding: 0;">
-                            <input type="radio" name="gender" id="female" (click)="selectGender('F')">
-                            &nbsp;&nbsp;&nbsp;
-                            <label for="female" class="mb-0">Žensko</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 0;">
-                            <input type="radio" name="gender" id="male" (click)="selectGender('M')">
-                            &nbsp;&nbsp;&nbsp;
-                            <label for="male" class="mb-0">Muško</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 0;">
-                            <input type="radio" name="gender" id="all" (click)="selectGender(' ')">
-                            &nbsp;&nbsp;&nbsp;
-                            <label for="all" class="mb-0">Sve</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <h4>
-                                Kategorije:
-                            </h4>
-                        </th>
-                    </tr>
-                    <tr *ngFor="let category of categories">
-                        <td  style="padding: 0;">
-                            <input type="checkbox" name="{{category}}" id="{{category}}"> &nbsp;&nbsp;&nbsp; 
-                            <label for="{{category}}" class="mb-0">{{category |titlecase}}</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button class="btn bg-warning">Ponisti filtere</button>
-                        </td>
-                    </tr>
-                </table>
+                <form>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>
+                                <h4>Pol:</h4>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0;">
+                                <input type="radio" [(ngModel)]="gender" name="gender" id="female" value="F">
+                                &nbsp;&nbsp;&nbsp;
+                                <label for="female" class="mb-0">Žensko</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0;">
+                                <input type="radio" [(ngModel)]="gender" name="gender" id="male" value="M">
+                                &nbsp;&nbsp;&nbsp;
+                                <label for="male" class="mb-0">Muško</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0;">
+                                <input type="radio" [(ngModel)]="gender" name="gender" id="all" value="n">
+                                &nbsp;&nbsp;&nbsp;
+                                <label for="all" class="mb-0">Sve</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <h4>
+                                    Kategorije:
+                                </h4>
+                            </th>
+                        </tr>
+                        <tr *ngFor="let category of categories">
+                            <td style="padding: 0;">
+                                <input type="checkbox" [(ngModel)]="category['selected']" id="{{category['category']}}" name="selectedCategories">
+                                &nbsp;&nbsp;&nbsp;
+                                <label for="{{category['category']}}" class="mb-0">{{category['category'] |titlecase}}</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button class="btn bg-warning btn-block" (click)="filterArticles()">Primeni</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button class="btn bg-warning btn-block" (click)="resetFilters()">Ponisti</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
             </div>
         </div>
         <div class="col-8">
@@ -79,10 +87,10 @@
             </div>
             <div class="row">
                 <div class="col-12 d-flex justify-content-center newBackground">
-                    <pagination *ngIf="pagination" [boundaryLinks]="true" [maxSize]="10" [totalItems]="pagination.TotalItems"
-                        [itemsPerPage]="pagination.ItemsPerPage" [(ngModel)]="pagination.CurrentPage"
-                        (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;"
-                        firstText="&laquo;" lastText="&raquo;" class="newBackground">
+                    <pagination *ngIf="pagination" [boundaryLinks]="true" [maxSize]="10"
+                        [totalItems]="pagination.TotalItems" [itemsPerPage]="pagination.ItemsPerPage"
+                        [(ngModel)]="pagination.CurrentPage" (pageChanged)="pageChanged($event)" previousText="&lsaquo;"
+                        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" class="newBackground">
                     </pagination>
                 </div>
             </div>
@@ -99,8 +107,8 @@
                         </tr>
                         <tr>
                             <td style="padding-top: 5px;">
-                                <select name="numberOfItems" id="" class="form-control" [(ngModel)]="pageSize" (ngModelChange)="numberChanged($event)"
-                                    >
+                                <select name="numberOfItems" id="" class="form-control" [(ngModel)]="pageSize"
+                                    (ngModelChange)="numberChanged($event)">
                                     <option value="4">4</option>
                                     <option value="8">8</option>
                                     <option value="12">12</option>
@@ -112,13 +120,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <th class="mb-0"  style="padding-bottom: 0;">
+                            <th class="mb-0" style="padding-bottom: 0;">
                                 Sortiraj:
                             </th>
                         </tr>
                         <tr>
                             <td style="padding-top: 5px;">
-                                <select name="sort" class="form-control">
+                                <select name="sort" class="form-control" [(ngModel)]="sort" (ngModelChange)="sortArticles($event)">
                                     <option value="0">Po ceni opadajuće</option>
                                     <option value="1">Po ceni rastuće</option>
                                     <option value="2">Po nazivu opadajuće</option>

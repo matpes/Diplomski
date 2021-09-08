@@ -12,10 +12,12 @@ export class HomeComponent implements OnInit {
 
   articles : Article[]; 
   allArticles : Article[];
-  categories : string[];
+  categories : Object [] = [];
   pagination: Pagination;
   pageNumber = 1;
   pageSize = 4;
+  gender : any;
+  sort: number = 0;
   constructor(private articlesService: ArticlesService) {
     this.loadCategories();
     this.loadArticles();
@@ -24,10 +26,22 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  sortArticles(event :any){
+    this.sort = event;
+    console.log(this.sort);
+    this.filterArticles();
+  }
+
   loadCategories(){
     this.articlesService.getCategories().subscribe((response:string[]) => {
-      this.categories = response;
-    })
+      response.forEach((res)=>{
+        let data = {
+          category : res,
+          selected : false
+        }
+        this.categories.push(data);
+      })
+    });
   }
 
   loadArticles(){
@@ -39,18 +53,31 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  selectGender(gender){
-    //this.articles = this.articles.filter(x=>x.gender==gender);
-  }
-
   pageChanged(event:any){
     this.pageNumber = event.page;
-    this.loadArticles();
+    this.filterArticles();
   }
 
   numberChanged(event:any){
     this.pageSize = event;
-    this.loadArticles();
+    this.filterArticles();
+  }
+
+  filterArticles(){
+
+    var selectedCategories: string [] = [];
+    this.categories.filter(x => x['selected']==true).map( x => selectedCategories.push(x['category']));
+    this.articlesService.getAllArticles(this.pageNumber, this.pageSize, this.gender, selectedCategories, this.sort).subscribe(response => {
+      this.articles = response.result;
+      this.pagination = response.pagination;
+    }, err =>{
+      console.log(err);
+    });
+  }
+
+  resetFilters(){
+    this.categories.forEach(data=>data['selected'] = false);
+    this.gender = undefined;
   }
 
 }
