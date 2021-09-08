@@ -169,7 +169,8 @@ namespace API.Controllers
             var images = htmlDocument.DocumentNode.Descendants("img").Where(node => node.GetAttributeValue("class", "").Contains("img-responsive")).ToList();
             var price = htmlDocument.DocumentNode.Descendants("span").Where(node => node.GetAttributeValue("class", "").Contains("price-wrapper")).ToList();
             var name = htmlDocument.DocumentNode.Descendants("h1").Where(node => node.GetAttributeValue("class", "").Contains("page-title")).ToList();
-            article.price = price.ElementAt(price.Count - 1).GetAttributeValue("content", "2990");
+            var priceString = price.ElementAt(price.Count - 1).GetAttributeValue("content", "2990");
+            article.price = int.Parse(priceString);
             article.name = name.ElementAt(0).ChildNodes[1].InnerText;
             List<ArticleImagesDto> list = new List<ArticleImagesDto>();
             var i = 0;
@@ -335,11 +336,12 @@ namespace API.Controllers
                     article.type = type;
                     article.href = a.Attributes[0].Value;
                     article.name = a.ChildNodes[1].InnerHtml;
-                    article.price = a.ChildNodes[2].InnerHtml;
+                    var price = a.ChildNodes[2].InnerHtml;
                     var image = a.FirstChild.Attributes[0].Value;
-                    if(article.price.IndexOf(" - ") != -1){
-                        article.price = article.price.Remove(article.price.IndexOf(" - "));
+                    if(price.IndexOf(" - ") != -1){
+                        price = price.Remove(price.IndexOf(" - "));
                     }
+                    article.price = int.Parse(price);
                     if (articlesList.FindIndex(x => x.href.Equals(article.href)) == -1)
                     {
                         article = await getPullAndBearImagesForArticle(article, image);
@@ -530,7 +532,7 @@ namespace API.Controllers
             price = price.Replace(" RSD", "");
             price = price.Replace(".", "");
 
-            details.price = price;
+            details.price = int.Parse(price);
             details.name = title;
 
             int i = 0;

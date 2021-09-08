@@ -85,19 +85,19 @@ namespace API.Data
 
         public void specialMethod()
         {
-            var allArticles = _context.Articles.ToList();
-            foreach (var article in allArticles)
-            {
-                if (article.price.IndexOf(" - ") != -1)
-                {
-                    article.price = article.price.Remove(article.price.IndexOf(" - "));
-                }
-                var price = article.price;
-                price = price.Replace(" RSD", "");
-                price = price.Replace(".", "");
-                article.price = price;
-            }
-            _context.SaveChanges();
+            // var allArticles = _context.Articles.ToList();
+            // foreach (var article in allArticles)
+            // {
+            //     if (article.price.IndexOf(" - ") != -1)
+            //     {
+            //         article.price = article.price.Remove(article.price.IndexOf(" - "));
+            //     }
+            //     var price = article.price;
+            //     price = price.Replace(" RSD", "");
+            //     price = price.Replace(".", "");
+            //     article.price = price;
+            // }
+            // _context.SaveChanges();
         }
 
         public void Update(ArticleDto article)
