@@ -4,5 +4,6 @@ namespace API.DTOs
     {
         public int Id { get; set; }
         public string name { get; set; }
+        public bool crawling {get; set;}
     }
 }

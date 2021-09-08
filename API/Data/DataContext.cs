@@ -13,6 +13,7 @@ namespace API.Data
         public DbSet<Article> Articles {get; set;}
         public DbSet<ArticleImages> ArticleImages {get; set;}
         public DbSet<Store> Stores {get; set;} 
+        public DbSet<Cart> Carts {get; set;} 
 
     }
 }

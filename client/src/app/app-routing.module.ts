@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminGuard } from 'src/_guards/admin.guard';
 import { AuthGuard } from 'src/_guards/auth.guard';
+import { AdminComponent } from './admin/admin.component';
 import { HomeComponent } from './articles/home/home.component';
 import { SingleArticleComponent } from './articles/home/single-article/single-article.component';
+import { CartComponent } from './cart/cart.component';
 import { UserEditComponent } from './members/user-edit/user-edit.component';
 import { RegisterComponent } from './register/register.component';
 
@@ -14,17 +17,20 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children:[
       { path: 'user/edit', component: UserEditComponent},
+      { path: 'cart', component: CartComponent}
+    ]
+  },
+  {
+    path: '',
+    runGuardsAndResolvers: 'always',
+    canActivate: [AdminGuard],
+    children:[
+      { path: 'admin', component: AdminComponent},
     ]
   },
   { path: 'register', component: RegisterComponent },
   { path: 'article/:id', component: SingleArticleComponent },
-  { path: '**', component: HomeComponent, pathMatch: 'full'},
-  // {
-  //   path: '',
-  //   runGuardsAndResolvers: 'always',
-  //   canActivate: [AuthGuard],
-
-  // }
+  { path: '**', component: HomeComponent, pathMatch: 'full'}
 ];
 
 @NgModule({

@@ -5,7 +5,7 @@ export interface Article {
     id : string;
     href: string;
     name : string;
-    price : string;
+    price : number;
     gender: string;
     type: string;
     imgSources : ArticleImages[];

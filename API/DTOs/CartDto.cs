@@ -8,5 +8,6 @@ namespace API.DTOs
         public ArticleDto Article { get; set; }
         public int ArticleId { get; set; }
         public int kolicina { get; set; }
+        public bool bought { get; set; }
     }
 }

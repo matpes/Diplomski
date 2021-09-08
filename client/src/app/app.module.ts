@@ -20,6 +20,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { LoadingInterceptor } from 'src/_interceptors/loading.interceptor';
 import { TextInputComponent } from './_forms/text-input/text-input.component';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { CartComponent } from './cart/cart.component';
+import { AdminComponent } from './admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,9 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     HomeComponent,
     SingleArticleComponent,
     UserEditComponent,
-    TextInputComponent
+    TextInputComponent,
+    CartComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule,

@@ -68,7 +68,15 @@ namespace API.Data
         {
             foreach (var item in articles)
             {
-                await _context.Articles.AddAsync(_mapper.Map<Article>(item));
+                Article article = await _context.Articles.FirstAsync(x => x.href.Equals(item.href));
+                if (article != null)
+                {
+                    article.price = item.price;
+                }
+                else
+                {
+                    await _context.Articles.AddAsync(_mapper.Map<Article>(item));
+                }
             }
             await _context.SaveChangesAsync();
         }
