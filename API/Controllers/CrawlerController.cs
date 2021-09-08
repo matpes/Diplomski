@@ -80,7 +80,7 @@ namespace API.Controllers
             _articlesRepository = articlesRepository;
         }
 
-        
+
         /**
         ===================================
                     TERRANOVA
@@ -216,18 +216,23 @@ namespace API.Controllers
                 ++index;
             }
             var kat = sb.ToString();
-            if(kat.Equals("bodi") || kat.Equals("majice-dugih-rukava") ){
+            if (kat.Equals("bodi") || kat.Equals("majice-dugih-rukava"))
+            {
                 kat = "majice";
-            } else if(kat.Equals("helanke") || kat.Equals("sportske-pantalone") ){
+            }
+            else if (kat.Equals("helanke") || kat.Equals("sportske-pantalone"))
+            {
                 kat = "pantalone";
-            } else if(kat.Equals("prsluci") ){
+            }
+            else if (kat.Equals("prsluci"))
+            {
                 kat = "kaputi-i-jakne";
             }
             return kat;
         }
 
 
-        
+
 
 
         /**
@@ -269,9 +274,16 @@ namespace API.Controllers
             List<string> women = getPullAndBearLinksLevel1("/zene/odeca/", urls2);
 
             List<ArticleDto> articlesList = new List<ArticleDto>();
-            articlesList = await getPullAndBearArticles('M', men, articlesList);
-            articlesList = await getPullAndBearArticles('F', women, articlesList);
-
+            try
+            {
+                articlesList = await getPullAndBearArticles('M', men, articlesList);
+            }
+            catch (Exception) { }
+            try
+            {
+                articlesList = await getPullAndBearArticles('F', women, articlesList);
+            }
+            catch (Exception) { }
             _articlesRepository.insertArrticles(articlesList);
 
             return Ok(articlesList);
@@ -285,7 +297,8 @@ namespace API.Controllers
             string ret;
             ret = str.Substring(i, j - i);
             string output;
-            if(!PullAndBearCategoryDictionary.TryGetValue(ret, out output)){
+            if (!PullAndBearCategoryDictionary.TryGetValue(ret, out output))
+            {
                 output = ret;
             }
             return output;
@@ -316,39 +329,44 @@ namespace API.Controllers
         {
             foreach (var link in women)
             {
-                string type = getPullAndBearCategory(link);
-
-                var response = await CallUrl(link);
-
-                HtmlDocument htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(response);
-
-                var linksA = htmlDoc.DocumentNode.Descendants("a").ToList();
-
-                foreach (var a in linksA)
+                try
                 {
-                    if (!a.FirstChild.Name.Equals("img"))
+                    string type = getPullAndBearCategory(link);
+
+                    var response = await CallUrl(link);
+
+                    HtmlDocument htmlDoc = new HtmlDocument();
+                    htmlDoc.LoadHtml(response);
+
+                    var linksA = htmlDoc.DocumentNode.Descendants("a").ToList();
+
+                    foreach (var a in linksA)
                     {
-                        break;
+                        if (!a.FirstChild.Name.Equals("img"))
+                        {
+                            break;
+                        }
+                        ArticleDto article = new ArticleDto { };
+                        article.gender = gender;
+                        article.type = type;
+                        article.href = a.Attributes[0].Value;
+                        article.name = a.ChildNodes[1].InnerHtml;
+                        var price = a.ChildNodes[2].InnerHtml;
+                        var image = a.FirstChild.Attributes[0].Value;
+                        if (price.IndexOf(" - ") != -1)
+                        {
+                            price = price.Remove(price.IndexOf(" - "));
+                        }
+                        article.price = int.Parse(price);
+                        if (articlesList.FindIndex(x => x.href.Equals(article.href)) == -1)
+                        {
+                            article = await getPullAndBearImagesForArticle(article, image);
+                            articlesList.Add(article);
+                        }
                     }
-                    ArticleDto article = new ArticleDto { };
-                    article.gender = gender;
-                    article.type = type;
-                    article.href = a.Attributes[0].Value;
-                    article.name = a.ChildNodes[1].InnerHtml;
-                    var price = a.ChildNodes[2].InnerHtml;
-                    var image = a.FirstChild.Attributes[0].Value;
-                    if(price.IndexOf(" - ") != -1){
-                        price = price.Remove(price.IndexOf(" - "));
-                    }
-                    article.price = int.Parse(price);
-                    if (articlesList.FindIndex(x => x.href.Equals(article.href)) == -1)
-                    {
-                        article = await getPullAndBearImagesForArticle(article, image);
-                        articlesList.Add(article);
-                    }
+                    Console.WriteLine("Finished " + link);
                 }
-                Console.WriteLine("Finished " + link);
+                catch (Exception) { }
             }
             return articlesList;
         }
@@ -511,7 +529,8 @@ namespace API.Controllers
             }
 
             string ret;
-            if(! ZaraCategoryDictionary.TryGetValue(type, out ret)){
+            if (!ZaraCategoryDictionary.TryGetValue(type, out ret))
+            {
                 ret = "ostalo";
             }
             return ret;
@@ -642,7 +661,9 @@ namespace API.Controllers
             return null;
         }
 
-        [HttpGet("prices")] public void updatePrices(){
+        [HttpGet("prices")]
+        public void updatePrices()
+        {
             _articlesRepository.specialMethod();
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using API.Extensions;
 
 namespace API.Entitites
@@ -15,6 +16,8 @@ namespace API.Entitites
         public string mail { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
         public char gender { get; set; }
+
+        public ICollection<Cart> carts { get; set; }
         
     }
 }

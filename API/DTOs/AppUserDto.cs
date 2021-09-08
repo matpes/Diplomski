@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace API.DTOs
 {
@@ -12,5 +13,6 @@ namespace API.DTOs
         public string mail { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
         public char gender { get; set; }
+        public ICollection<CartDto> carts { get; set; }
     }
 }

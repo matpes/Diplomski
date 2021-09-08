@@ -12,6 +12,7 @@ namespace API.Helpers
             CreateMap<ArticleDto, Article>().ReverseMap();
             CreateMap<ArticleImagesDto, ArticleImages>().ReverseMap();
             CreateMap<Store, StoreDto>().ReverseMap();
+            CreateMap<Cart, CartDto>().ReverseMap();
             CreateMap<AppUser, AppUserDto>().ForMember(dest => dest.age, opt => opt.MapFrom(src => src.dateOfBirth.CalculateAge()));
             CreateMap<AppUserUpdateDto, AppUser>();
             CreateMap<RegisterDto, AppUser>();
