@@ -48,6 +48,7 @@ export class HomeComponent implements OnInit {
     this.articlesService.getAllArticles(this.pageNumber, this.pageSize).subscribe(response => {
       this.articles = response.result;
       this.pagination = response.pagination;
+      console.log(this.articles);
     }, err =>{
       console.log(err);
     })

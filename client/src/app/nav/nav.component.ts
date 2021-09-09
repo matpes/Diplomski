@@ -33,4 +33,8 @@ export class NavComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  isAdmin(){
+    return JSON.parse(localStorage.user)['username'] == 'admin';
+  }
+
 }

@@ -7,21 +7,22 @@
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/cart">Cart</a>
+                    <a class="nav-link" href="/cart" *ngIf="accountService.currentUser$ | async">Cart</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/register" *ngIf="(accountService.currentUser$ | async)==undefined">Regsiter</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" (click)="logout()" href="#" *ngIf="accountService.currentUser$ | async">Log
                         Out</a>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
-            <a class="dropdown-toggle text-light" dropdownToggle>Welcome {{user.username | titlecase}}</a>
+            <a class="dropdown-toggle text-light" dropdownToggle style="text-decoration: none !important;">Dobrodošli {{user.username | titlecase}}</a>
             <div class="dropdown-menu mt-3" *dropdownMenu>
-                <a href="/user/edit" class="dropdown-item">Edit profile</a>
+                <a href="/user/edit" class="dropdown-item">Uredi profil</a>
+                <a href="/admin" class="dropdown-item" *ngIf="isAdmin()">Uredi prodavnice</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" (click)="logout()">Log out</a>
             </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppUser } from 'src/_models/appUser';
 import { Article } from 'src/_models/article';
@@ -18,38 +18,46 @@ export class SingleArticleComponent implements OnInit {
 
   id: string;
   article: Article;
-  user : AppUser;
-  constructor(private route:ActivatedRoute, private articlesService:ArticlesService,
-     private memberService:MembersService, private cartService: CartService,
-     private toastr:ToastrService) {
+  user: AppUser;
+  constructor(private route: ActivatedRoute, private articlesService: ArticlesService,
+    private memberService: MembersService, private cartService: CartService, private router: Router,
+    private toastr: ToastrService) {
     this.id = this.route.snapshot.paramMap.get('id');
-    this.articlesService.getArticleById(this.id).subscribe((art:Article)=>{
+    this.articlesService.getArticleById(this.id).subscribe((art: Article) => {
       this.article = art
     }, err => {
       console.log(err);
     });
-    this.memberService.getUser(JSON.parse(localStorage.user)['username']).subscribe(ret=>{
-      this.user = ret;
-    });
-   }
-
-  ngOnInit(): void {
-    
+    if (localStorage.getItem("user") != null) {
+      this.memberService.getUser(JSON.parse(localStorage.user)['username']).subscribe(ret => {
+        this.user = ret;
+      });
+    } else {
+      this.user = null;
+    }
   }
 
-  AddToCart(article:Article){
-    var cart : Cart = {
-      article: article,
-      appUser: this.user,
-      kolicina: 1,
-      bought: false,
-      id: undefined
-    };
-    this.cartService.addToCart(cart).subscribe( ret => {
-      this.toastr.success("Artikal dodat u korpu");
-    }, err =>{
-      this.toastr.error("Artikal nije kupljen");
-    });
+  ngOnInit(): void {
+
+  }
+
+  AddToCart(article: Article) {
+    if (this.user == null) {
+      this.router.navigateByUrl("/");
+    } else {
+      var cart: Cart = {
+        article: article,
+        appUser: this.user,
+        kolicina: 1,
+        bought: false,
+        id: undefined
+      };
+      this.cartService.addToCart(cart).subscribe(ret => {
+        this.toastr.success("Artikal dodat u korpu");
+      }, err => {
+        this.toastr.error("Artikal nije kupljen");
+      });
+    }
   }
 
 }

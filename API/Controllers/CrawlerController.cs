@@ -19,6 +19,12 @@ namespace API.Controllers
     public class CrawlerController : BaseApiController
     {
 
+        public static CrawlerController singleton = null;
+
+        public static CrawlerController getSingleton(){
+            return singleton;
+        }
+
         private static Dictionary<string, string> PullAndBearCategoryDictionary = new Dictionary<string, string>{
             {"kombinezoni-i-pantalone-na-tregere", "kombinezoni"},
             {"kratke-pantalone", "sortsevi"},
@@ -78,6 +84,9 @@ namespace API.Controllers
         public CrawlerController(IArticlesRepository articlesRepository)
         {
             _articlesRepository = articlesRepository;
+            if(singleton == null){
+                singleton = this;
+            }
         }
 
 
