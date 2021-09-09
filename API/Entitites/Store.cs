@@ -1,3 +1,5 @@
+using System;
+
 namespace API.Entitites
 {
     public class Store
@@ -5,5 +7,6 @@ namespace API.Entitites
         public int Id { get; set; }
         public string name { get; set; }
         public bool crawling {get; set;}
+        public DateTime lastTimeCrawled { get; set; }
     }
 }

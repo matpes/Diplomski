@@ -16,6 +16,7 @@ namespace API.Extensions
             services.AddScoped<IArticlesRepository, ArticlesRepository>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<ICartsRepository, CartsRepository>();
+            services.AddScoped<IStoresRepository, StoresRepository>();
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(config.GetConnectionString("DefaultConnection"));
