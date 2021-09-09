@@ -1,0 +1,57 @@
+.picture {
+    border: 10px double darkgray;
+    border-radius: 5%;
+    padding: 3px;
+ }
+
+ a .pictureLink{
+    color: black;
+    text-decoration: none;
+ }
+
+ a:hover .pictureLink{
+    color: black;
+    text-decoration: none !important;
+    
+ }
+
+ .dont-move{
+   position: fixed !important; 
+   top: 110px !important;
+   height: 85%;
+   overflow-y: scroll;
+   overflow-x: hidden;
+ }
+
+ .dont-move-right{
+   position: fixed !important; 
+   top: 110px !important;
+ }
+
+ .card:hover img{
+    transform: scale(1.1, 1.1);
+    transition-duration: 500ms;
+    transition-timing-function: ease-out;
+    opacity: 0.85;
+ }
+
+ .card img{
+   transform: scale(1.0, 1.0);
+   transition-duration: 500ms;
+   transition-timing-function: ease-out;
+ }
+
+ .card-img-wrapper{
+    overflow: hidden;
+ }
+
+ .newBackground ul li a{
+   background-color: rgb(255, 120, 81) !important;
+ }
+
+ .active .page-link {
+   z-index: 3;
+   color: #fff;
+   background-color: rgb(255, 120, 81) !important;
+   border-color: rgb(255, 120, 81) !important;
+}

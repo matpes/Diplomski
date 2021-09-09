@@ -1,0 +1,60 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2">
+        </div>
+        <div class="col-8">
+            <div *ngIf="carts.length > 0">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3" *ngFor="let cart of carts">
+                        <div class="picture pictureLink ">
+
+                            <a href="/article/{{cart.article.id}}" class="card">
+                                <div class="text-center" style="height: 70px;">
+                                    <b>{{cart.article.name}}</b>
+                                </div>
+                                <div class="card-img-wrapper">
+                                    <img src="{{cart.article.imgSources[0].src}}" alt="" class="img-fluid">
+                                </div>
+                                <div class="text-center">
+                                    <b>
+                                        {{cart.article.price}} RSD
+                                    </b>
+                                </div>
+                            </a>
+                            <div style="padding-top: 8px;">
+                                <button class="btn btn-block btn-primary" type="button"
+                                    (click)="removeArticle(cart)">Izbaci iz korpe</button>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+                </div>
+
+            </div>
+            <div *ngIf="carts.length <=0" class="text-center">
+                <br>
+                <br>
+                <br>
+                <h1>Vasa korpa je prazna</h1>
+            </div>
+        </div>
+        <div class="col-2">
+            <h4>
+                Ukupna cena iznosti
+            </h4>
+            <h4>
+                <strong>
+                    {{totalPrice}} RSD
+                </strong>
+            </h4>
+            <hr>
+            <button *ngIf="carts.length == 0" disabled class="btn btn-block btn-primary" type="button"
+                (click)="BuyAll()">Kupi sve</button>
+            <button *ngIf="carts.length > 0" class="btn btn-block btn-primary" type="button" (click)="BuyAll()">Kupi
+                sve</button>
+
+        </div>
+
+    </div>
+</div>
