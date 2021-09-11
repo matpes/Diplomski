@@ -1,6 +1,6 @@
 <div class="row" *ngIf="appUser">
     <div class="col-4">
-        <h1>Vas profil</h1>
+        <h1>Vaš profil</h1>
     </div>
     <div class="col-8">
         <div class="alert alert-warning" *ngIf="editForm.dirty" style="color: black;">
@@ -29,7 +29,7 @@
                 </div>
                 <div>
                     <strong>Član od:</strong>
-                    <p>{{appUser.created}}</p>
+                    <p>{{appUser.created | date:'dd-MM-yyyy'}}</p>
                 </div>
             </div>
             <div class="card-footer bg-warning">

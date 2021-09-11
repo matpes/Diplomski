@@ -54,7 +54,7 @@ namespace API.Controllers
             var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDto.Username);
             if (user == null)
             {
-                return Unauthorized("Inavlid username");
+                return Unauthorized("Pogrešno korisničko ime");
             }
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
@@ -62,7 +62,7 @@ namespace API.Controllers
             {
                 if (computedHash[i] != user.PasswordHash[i])
                 {
-                    return Unauthorized("Inavlid password");
+                    return Unauthorized("Pogrešna lozinka");
                 }
             }
             return new UserDto

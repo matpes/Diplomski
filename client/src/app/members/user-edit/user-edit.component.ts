@@ -39,7 +39,7 @@ export class UserEditComponent implements OnInit {
 
   updateMember() {
     this.memberService.updateUser(this.appUser).subscribe(() => {
-      this.toastr.success("Profi uspešno ažuriran");
+      this.toastr.success("Profil uspešno ažuriran");
       this.editForm.reset(this.appUser);
     });
   }
